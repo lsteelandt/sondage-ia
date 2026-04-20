@@ -1,0 +1,12 @@
+{
+  "craintes": [
+    { "id": "remplacement", "label": "Remplacement de mon métier" },
+    { "id": "securite", "label": "Sécurité des données" },
+    { "id": "dependance", "label": "Dépendance excessive" },
+    { "id": "complexite", "label": "Complexité d'utilisation" },
+    { "id": "erreurs", "label": "Erreurs de décision" },
+    { "id": "biais", "label": "Biais discriminatoires" },
+    { "id": "competences", "label": "Perte de compétences" },
+    { "id": "cout", "label": "Coût d'implémentation" }
+  ]
+}
