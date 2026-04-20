@@ -6,7 +6,8 @@ out/
 .env.development.local
 .env.test.local
 .env.production.local
-data/
+data/admin.json
+data/formations/
 .vscode/
 .idea/
 .DS_Store
