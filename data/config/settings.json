@@ -1,0 +1,27 @@
+{
+  "app": {
+    "name": "Sondage IA",
+    "url": "http://localhost:3100"
+  },
+  "session": {
+    "cookieName": "survey_admin_session",
+    "maxAgeMs": 1800000
+  },
+  "smtp": {
+    "host": "mail.transilio.fr",
+    "port": 587,
+    "secure": false
+  },
+  "emailFrom": "formation@transilio.fr",
+  "emailSubject": "Vos réponses au sondage IA",
+  "craintes": [
+    { "id": "remplacement", "label": "Remplacement de mon métier" },
+    { "id": "securite", "label": "Sécurité des données" },
+    { "id": "dependance", "label": "Dépendance excessive" },
+    { "id": "complexite", "label": "Complexité d'utilisation" },
+    { "id": "erreurs", "label": "Erreurs de décision" },
+    { "id": "biais", "label": "Biais discriminatoires" },
+    { "id": "competences", "label": "Perte de compétences" },
+    { "id": "cout", "label": "Coût d'implémentation" }
+  ]
+}

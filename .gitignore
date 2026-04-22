@@ -13,7 +13,6 @@ out/
 .env.test.local
 .env.production.local
 data/admin.json
-data/config/settings.json
 
 # Données MongoDB (si utilisation du filesystem)
 data/formations/
