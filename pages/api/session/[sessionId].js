@@ -1,121 +1,74 @@
-import { MongoClient } from 'mongodb'
+import path from 'path'
+import { readJsonFile, writeJsonFile } from '../../../lib/utils'
 
-const uri = process.env.MONGODB_URI
-const options = {
-  maxPoolSize: 10,
-  minPoolSize: 0,
-  socketTimeoutMS: 45000,
-  family: 4
-}
-
-const client = new MongoClient(uri, options)
-const db = client.db('sondage')
+const SESSIONS_PATH = path.join(process.cwd(), 'data', 'sessions.json')
 
 export default async function handler(req, res) {
-  const { sessionId } = req.query
-  if (!sessionId) {
-    return res.status(400).json({ error: 'sessionId est requis' })
-  }
+  var sessionId = req.query.sessionId
 
   try {
-    // Vérifier que la session existe
-    const existingSession = await db.collection('survey').findOne({ id: sessionId })
-    if (!existingSession) {
-      return res.status(404).json({ error: 'Formation non trouvée' })
-    }
+    var sessions = await readJsonFile(SESSIONS_PATH)
 
     if (req.method === 'GET') {
-      // Récupérer toutes les réponses pour cette session
-      const responses = await db.collection('survey').find({ id: sessionId }).toArray()
-
-      // Agréger par participant
-      var participantMap = {}
-      responses.forEach(function (r) {
-        if (!participantMap[r.participantId]) {
-          participantMap[r.participantId] = {
-            participantId: r.participantId,
-            attentes: [],
-            craintes: []
-          }
-        }
-        ;(participantMap[r.participantId].attentes || []).push(...(r.attentes || []))
-        ;(participantMap[r.participantId].craintes || []).push(...(r.craintes || []))
-      })
-
-      // Normaliser les mots-clés (retirer les accents, mettre en minuscule)
-      function normalizeKeyword(kw) {
-        return kw
-          .toLowerCase()
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-          .trim()
+      // Récupérer les données d'une session spécifique
+      if (!sessionId || !sessions[sessionId]) {
+        return res.status(404).json({ error: 'Session non trouvée' })
       }
 
-      // Regrouper les mots-clés
-      var aggregatedParticipants = []
-      Object.entries(participantMap).forEach(function ([participantId, data]) {
-        const entry = { participantId }
+      var sessionData = sessions[sessionId]
 
-        // Regrouper les mots-clés attendus
-        const setAttentes = new Set()
-        data.attentes.forEach(function (kw) {
-          const key = normalizeKeyword(kw)
-          setAttentes.add(key)
+      // Calculer les agrégats needs/fears pour le nuage de mots
+      var needsAgg = {}
+      var fearsAgg = {}
+
+      ;(sessionData.responses || []).forEach(function (response) {
+        ;(response.needs || []).forEach(function (word) {
+          needsAgg[word] = (needsAgg[word] || 0) + 1
         })
-        entry.attentes = Array.from(setAttentes)
-
-        // Regrouper les mots-clés craints
-        const setCraintes = new Set()
-        data.craintes.forEach(function (kw) {
-          const key = normalizeKeyword(kw)
-          setCraintes.add(key)
+        ;(response.fears || []).forEach(function (word) {
+          fearsAgg[word] = (fearsAgg[word] || 0) + 1
         })
-        entry.craintes = Array.from(setCraintes)
-
-        aggregatedParticipants.push(entry)
-      })
-
-      // Trier par nombre de craintes (décroissant)
-      aggregatedParticipants.sort(function (a, b) {
-        return b.craintes.length - a.craintes.length
       })
 
       return res.status(200).json({
-        responses: aggregatedParticipants,
-        info: existingSession
+        id: sessionData.id,
+        label: sessionData.label,
+        createdAt: sessionData.createdAt,
+        participantCount: sessionData.participantCount || 0,
+        responses: sessionData.responses || [],
+        // Agrégats pour nuages de mots
+        keywords: {
+          attentes: needsAgg,
+          craintes: fearsAgg,
+        },
       })
     }
 
     if (req.method === 'POST') {
-      const { participantId, attentes, craintes } = req.body
-      if (!participantId) {
-        return res.status(400).json({ error: 'participantId est requis' })
+      // Ajouter une réponse de sondage à une session
+      if (!sessionId || !sessions[sessionId]) {
+        return res.status(404).json({ error: 'Session non trouvée' })
       }
 
-      // Vérifier que l'utilisateur n'a pas déjà répondu
-      const existingResponse = await db.collection('survey').findOne({
-        id: sessionId,
-        'participantId': participantId
-      })
+      var body = req.body
 
-      if (existingResponse) {
-        return res.status(400).json({ error: 'Déjà répondu à ce sondage' })
+      // Structure attendue : { id: "BUDAP", needs: [...], fears: [...] }
+      var response = {
+        id: body.id || 'UNKNOWN',
+        submittedAt: new Date().toISOString(),
+        needs: body.needs || [],
+        fears: body.fears || [],
       }
 
-      // Créer une nouvelle réponse
-      const response = {
-        participantId,
-        attentes: attentes || [],
-        craintes: craintes || [],
-        createdAt: new Date().toISOString()
+      if (!sessions[sessionId].responses) {
+        sessions[sessionId].responses = []
       }
 
-      await db.collection('survey').insertOne({
-        id: sessionId,
-        ...response
-      })
+      sessions[sessionId].responses.push(response)
+      sessions[sessionId].participantCount = sessions[sessionId].responses.length
 
-      return res.status(200).json({ success: true })
+      await writeJsonFile(SESSIONS_PATH, sessions)
+      return res.status(201).json({ success: true, id: response.id })
     }
 
     return res.status(405).json({ error: 'Méthode non autorisée' })

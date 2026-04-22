@@ -56,37 +56,36 @@ sondage-ia/
 
 ### Stagiaire
 1. Accès via `/?session=CODE_HEX`
-2. Vérification code formation
+2. Vérification code formation (session)
 3. Étape 1 : code stagiaire ou nouveau (phonétique)
 4. Étape 2 : attentes en texte libre
-5. Étape 3 : craintes (cases + texte)
-6. Merci → fin
+5. Étape 3 : craintes (cases + texte). Choix de 3 cases maximum + complément par texte
+6. Étape 4 : Merci ! avec rappel des réponses fournies + code stagiaire + saisie optionnelle adresse email pour envoi des infos récapitulatives 
+7. fin (avec retour possible à l'écran d'accueil de la session (/?session=CODE_HEX))
 
 ## Stockage des données
 
-### formations.json
+### sessions.json
 ```json
 {
-  "formations": {
-    "a3f7b2e9": {
-      "label": "Formation IA Q2 2026",
-      "createdAt": "2026-04-20T10:00:00Z",
-      "stagiaireCount": 0
-    }
-  }
-}
-```
-
-### stagiaires.json (par formation)
-```json
-{
-  "stagiaires": {
-    "BATEAU": {
-      "sessionCode": "a3f7b2e9",
-      "attentes": ["aide", "automatisation"],
-      "craintes": ["remplacement", "sécurité"],
-      "createdAt": "2026-04-20T10:15:00Z"
-    }
+    "id": "<code hex 32bits>", //exemple "5fbd5366"
+    "label": "<nom session>, //exemple "Besse""
+    "createdAt": "<date time>", //exemple "2026-04-22T14:55:33.038Z"
+    "participantCount": <nb participants>, //exemple 1
+    "responses": [
+      {
+        "id": "<unique 5 Letters code>" // exemple "BUDAP",
+        "submittedAt": "<date time>", // exemple "2026-04-22T15:09:45.258Z"
+        "needs": [<liste d'attentes>],   // exemple ["redaction, automatisation, "recherche juridique"]
+        "fears": [<liste de craintes>]   // exemple ["remplacement, dependance, "cout"]
+      },
+      {
+        "id": "<unique 5 Letters code>" // exemple "TISAM",
+        "submittedAt": "<date time>", // exemple "2026-04-22T15:09:45.258Z"
+        "needs": [<liste d'attentes>],   // exemple ["brainstroming", "vérifications"]
+        "fears": [<liste de craintes>]   // exemple ["complexite", "biais", ""sécurité"]
+      }
+    ]
   }
 }
 ```
@@ -118,9 +117,39 @@ sondage-ia/
 
 ## Configuration
 
-### Variables d'environnement
-- `NEXT_PUBLIC_APP_URL`
-- `NEXT_PUBLIC_APP_NAME`
+### par fichier settings.json dans data/config/
+
+Exemple de configuration
+```json
+{
+  "app": {
+    "name": "Sondage IA",
+    "url": "http://localhost:3100"
+  },
+  "session": {
+    "cookieName": "survey_admin_session",
+    "maxAgeMs": 1800000
+  },
+  "smtp": {
+    "host": "mail.transilio.fr",
+    "port": 587,
+    "secure": false
+  },
+  "emailFrom": "formation@transilio.fr",
+  "emailSubject": "Vos réponses au sondage IA",
+  "craintes": [
+    { "id": "remplacement", "label": "Remplacement de mon métier" },
+    { "id": "securite", "label": "Sécurité des données" },
+    { "id": "dependance", "label": "Dépendance excessive" },
+    { "id": "complexite", "label": "Complexité d'utilisation" },
+    { "id": "erreurs", "label": "Erreurs de décision" },
+    { "id": "biaisbiais", "label": "Biais discriminatoires" },
+    { "id": "competences", "label": "Perte de compétences" },
+    { "id": "cout", "label": "Coût d'implémentation" }
+  ]
+}
+```
+
 
 ### Commandes
 ```bash
@@ -130,11 +159,55 @@ npm install && npm run dev
 ## Design des écrans
 
 ### Admin
+
+-Liste de sessions avec résumé (id Session, nb participants, nb mots) + boutons : "allé à la session" + copier l'url session + résultats (grissé si aucune réponse) + supprimer
+
+#### Page résultat d'une session 
 - Dashboard : stats globales
-- Gestion formations CRUD
-- Résultats : nuages de mots côte à côte
+- Résultats : nuages de mots côte à côte. Gauche en bleu = needs. Droite en orange = Craintes
 
 ### Sondage
-- 3 étapes claires avec progression
+- 4 étapes claires avec progression
 - UI mobile-first
 - Feedback utilisateur immédiat
+
+
+## Chartes Graphique
+Respecter la chartes graphiques Transilio
+
+### COULEURS PRINCIPALES
+#### Bleu Transilio
+#0F1459
+
+#### Rouge Transilio
+#FF5340
+
+#### Blanc
+#FFFFFF
+
+### COULEURS SECONDAIRES
+#### Noir
+#000000
+
+#### Bleu Electrique
+ #2F3CED
+
+#### Bleu pastel
+#F0F1FF
+
+#### Rouge foncé
+#730B00
+
+#### Rouge pastel
+#FFEDEB
+
+### Polices de caractères 
+Titres : Google font "Space Grotesk"
+Texte : Google font "Inter"
+
+Polices importées plutot que téléchargées. 
+
+
+
+
+

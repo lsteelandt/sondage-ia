@@ -46,10 +46,7 @@ export default function AuthForm({ firstTime }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 animate-fade-in relative overflow-hidden">
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 gradient-overlay pointer-events-none" />
-
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 animate-fade-in relative overflow-hidden bg-transilio-blue">
       {/* Floating elements */}
       <div className="absolute top-20 left-10 w-64 h-64 bg-transilio-electric/20 rounded-full blur-3xl animate-float" />
       <div className="absolute bottom-20 right-10 w-48 h-48 bg-transilio-red/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }} />

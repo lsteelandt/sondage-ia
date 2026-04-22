@@ -1,62 +1,40 @@
-// pages/index.js
 import Head from 'next/head'
-import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 
 export default function Home() {
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
-  const [sessions, setSessions] = useState([])
-  const [loadingSessions, setLoadingSessions] = useState(true)
+  const { session } = router.query
+  const [participantCode, setParticipantCode] = useState('')
 
+  // Si on arrive avec ?session=ID, rediriger directement vers /survey?session=ID
   useEffect(function () {
-    // Charger les formations depuis l'API
-    fetch('/api/sessions')
-      .then(function (res) {
-        if (!res.ok) {
-          console.error('Erreur chargement sessions')
-          return []
-        }
-        return res.json()
-      })
-      .then(function (data) {
-        setSessions(data)
-      })
-      .catch(function (err) {
-        console.error('Erreur:', err)
-      })
-      .finally(function () {
-        setLoadingSessions(false)
-      })
-  }, [])
+    if (session && router.isReady) {
+      router.replace('/survey?session=' + encodeURIComponent(session))
+    }
+  }, [session, router.isReady])
 
-  const handleStartSurvey = async () => {
-    setIsLoading(true)
-    try {
-      const response = await fetch('/api/session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: crypto.randomUUID(),
-          surname: '',
-          name: '',
-          fear: '',
-          fears: '',
-          wordcloud: '',
-          feedback: ''
-        })
-      })
+  // Afficher un loader pendant la redirection automatique
+  if (session) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-transilio-blue">
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-full bg-[#0F1459]" />
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-transilio-electric/20 rounded-full blur-3xl animate-float" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-transilio-red/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
+        </div>
+        <div className="z-10 text-center">
+          <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-white/60">Redirection vers le sondage...</p>
+        </div>
+      </div>
+    )
+  }
 
-      if (response.ok) {
-        router.push('/survey')
-      } else {
-        console.error('Erreur lors du démarrage du sondage')
-      }
-    } catch (error) {
-      console.error('Erreur:', error)
-    } finally {
-      setIsLoading(false)
+  const handleJoinWithCode = (e) => {
+    e.preventDefault()
+    if (participantCode.trim()) {
+      router.push('/survey?session=' + encodeURIComponent(participantCode.trim()))
     }
   }
 
@@ -72,103 +50,41 @@ export default function Home() {
 
       <div className="z-10 text-center max-w-lg w-full animate-scale-in">
         <Head>
-          <title>Sondage Transilio</title>
-          <meta name="description" content="Participez au sondage Transilio" />
+          <title>Sondage Intro - Formation Transilio</title>
+          <meta name="description" content="Sondage d&apos;introduction à la formation Transilio" />
           <link rel="icon" href="/favicon.ico" />
         </Head>
 
-        <h1 className="text-6xl font-bold text-white mb-6">
+        <h1 className="text-5xl font-bold text-white mb-6">
           <span className="bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
-            Sondage
+            Bienvenue
           </span>
         </h1>
 
         <p className="text-xl text-white/80 mb-12">
-          Découvrez comment Transilio peut vous aider face à vos peurs et défis.
+          Ce sondage permet de préparer votre session de formation.<br />
+          Vos réponses aideront le formateur à adapter le contenu à vos besoins.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-6 justify-center">
-          <button
-            onClick={handleStartSurvey}
-            disabled={isLoading}
-            className="btn-primary w-full sm:w-auto text-lg px-12 py-6 flex items-center justify-center gap-4"
-          >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+        <div className="flex flex-col gap-4">
+          {/* Saisie du code de session */}
+          <form onSubmit={handleJoinWithCode} className="flex gap-3">
+            <input
+              type="text"
+              value={participantCode}
+              onChange={(e) => setParticipantCode(e.target.value)}
+              placeholder="Saisissez votre code de session"
+              className="flex-1 px-5 py-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-transilio-electric focus:ring-2 focus:ring-transilio-electric/30 transition-all text-base"
+            />
+            <button
+              type="submit"
+              disabled={!participantCode.trim()}
+              className="btn-primary px-8 py-4 text-base whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.25.98l3.197-2.132a1 1 0 00-.502-1.682zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            {isLoading ? 'Chargement...' : 'Commencer le sondage'}
-          </button>
-
-          <a
-            href="https://transilio.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-secondary w-full sm:w-auto text-lg px-12 py-6 flex items-center justify-center gap-4"
-          >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-              />
-            </svg>
-            En savoir plus
-          </a>
+              Rejoindre
+            </button>
+          </form>
         </div>
-
-        <div className="mt-16 grid grid-cols-3 gap-6 text-white/60">
-          <div className="p-4 rounded-xl bg-white/5">
-            <div className="text-3xl mb-2">🔒</div>
-            <div className="font-medium">Anonyme</div>
-          </div>
-          <div className="p-4 rounded-xl bg-white/5">
-            <div className="text-3xl mb-2">⚡</div>
-            <div className="font-medium">Rapide</div>
-          </div>
-          <div className="p-4 rounded-xl bg-white/5">
-            <div className="text-3xl mb-2">🎯</div>
-            <div className="font-medium">Pertinent</div>
-          </div>
-        </div>
-
-        {loadingSessions ? (
-          <div className="mt-8 text-center text-white/60">Chargement des formations...</div>
-        ) : sessions.length === 0 ? (
-          <div className="mt-8 text-center text-white/60">Aucune formation disponible</div>
-        ) : (
-          <div className="mt-8">
-            <h3 className="text-white/80 font-medium mb-3">Formations disponibles :</h3>
-            <div className="flex flex-wrap gap-2">
-              {sessions.map(function (session) {
-                return (
-                  <a
-                    key={session.id}
-                    href={`/admin/resultats?session=${session.id}`}
-                    className="inline-flex items-center px-3 py-1.5 bg-white/10 rounded-full text-white/70 hover:bg-white/20 hover:text-white transition-colors text-sm"
-                  >
-                    {session.title}
-                  </a>
-                )
-              })}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   )

@@ -27,7 +27,7 @@ export default function SessionsPage() {
   var setCopiedId = copiedId[1]
   copiedId = copiedId[0]
 
-  useEffect(function () {
+  useEffect(() => {
     loadFormations()
   }, [])
 
@@ -92,16 +92,47 @@ export default function SessionsPage() {
 
   function handleCopy(sessionId) {
     var url = window.location.origin + '/survey?session=' + sessionId
-    navigator.clipboard.writeText(url).then(function () {
-      setCopiedId(sessionId)
-      setTimeout(function () { setCopiedId(null) }, 2000)
-    })
+
+    // Fallback pour iOS Safari/Chrome qui ne supporte pas navigator.clipboard
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(function () {
+        setCopiedId(sessionId)
+        setTimeout(function () { setCopiedId(null) }, 2000)
+      })
+    } else {
+      var textarea = document.createElement('textarea')
+      textarea.value = url
+      textarea.style.position = 'fixed'
+      textarea.style.left = '-9999px'
+      document.body.appendChild(textarea)
+      textarea.focus()
+      textarea.select()
+      try {
+        document.execCommand('copy')
+        setCopiedId(sessionId)
+        setTimeout(function () { setCopiedId(null) }, 2000)
+      } catch (err) {
+        console.error('Copy failed:', err)
+      }
+      document.body.removeChild(textarea)
+    }
   }
 
   function formatDate(iso) {
     if (!iso) return ''
     var d = new Date(iso)
     return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
+  }
+
+  // Compter le nombre total de mots dans les réponses d'une session
+  function countWords(info) {
+    if (!info.responses || !Array.isArray(info.responses)) return 0
+    var count = 0
+    info.responses.forEach(function (r) {
+      if (r.needs) count += r.needs.length
+      if (r.fears) count += r.fears.length
+    })
+    return count
   }
 
   var entries = Object.entries(formations)
@@ -134,7 +165,7 @@ export default function SessionsPage() {
             <input
               type="text"
               value={newLabel}
-              onChange={function (e) { setNewLabel(e.target.value) }}
+              onChange={(e) => setNewLabel(e.target.value)}
               placeholder="Nom de la nouvelle formation"
               className="input-field pl-10"
             />
@@ -149,7 +180,7 @@ export default function SessionsPage() {
                 Création...
                 <svg className="w-4 h-4 ml-2 animate-spin" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.96 7.96 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
               </>
             ) : (
@@ -179,7 +210,7 @@ export default function SessionsPage() {
         <div className="glass-surface p-12 flex justify-center items-center">
           <svg className="w-8 h-8 text-white animate-spin" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.96 7.96 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
         </div>
       )}
@@ -199,10 +230,12 @@ export default function SessionsPage() {
 
       {/* Formation cards */}
       <div className="space-y-4">
-        {entries.map(function (entry) {
-          var id = entry[0]
-          var info = entry[1]
-          var hasParticipants = (info.participantCount || 0) > 0
+        {entries.map((entry) => {
+          const id = entry[0]
+          const info = entry[1]
+          const hasParticipants = (info.participantCount || 0) > 0
+          const wordCount = countWords(info)
+
           return (
             <div key={id} className="glass-surface rounded-xl p-6 hover:bg-white/[0.15] transition-colors hover:shadow-lg">
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
@@ -231,6 +264,12 @@ export default function SessionsPage() {
                     </div>
                     <div className="flex items-center gap-1.5">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                      </svg>
+                      <span>{wordCount} mot{wordCount !== 1 ? 's' : ''}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                       <span>{formatDate(info.createdAt)}</span>
@@ -240,6 +279,20 @@ export default function SessionsPage() {
 
                 {/* Actions */}
                 <div className="flex flex-col gap-2 shrink-0">
+                  {/* Aller à la session (lien vers le sondage) */}
+                  <a
+                    href={'/survey?session=' + id}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-xl transition-colors"
+                  >
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                    Aller à la session
+                  </a>
+
+                  {/* Résultats (grisé si pas de participants) */}
                   {hasParticipants ? (
                     <a
                       href={'/admin/resultats?session=' + id}
@@ -261,6 +314,8 @@ export default function SessionsPage() {
                       Aucun résultat
                     </button>
                   )}
+
+                  {/* Supprimer */}
                   <button
                     onClick={function () { handleDelete(id, info.label) }}
                     className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-transilio-red hover:bg-transilio-red/10 rounded-xl transition-colors"
@@ -300,7 +355,7 @@ export default function SessionsPage() {
                       ) : (
                         <>
                           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2M8 16a2 2 0 002 2h8a2 2 0 002-2v-8a2 2 0 00-2-2h-2M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2M8 16a2 2 0 002 2h8a2 2 0 002-2v-8a2 2 0 00-2-2h-2" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2M8 16a2 2 0 002 2h8a2 2 0 002-2v-8a2 2 0 00-2-2h-2M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2M8 16A2 2 0 008 18h8a2 2 0 002-2v-8" />
                           </svg>
                           Copier
                         </>

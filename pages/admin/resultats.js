@@ -1,36 +1,35 @@
-import { use } from 'react'
+import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import AdminLayout from '../../components/Admin/AdminLayout'
 import SimpleWordCloud from '../../components/Survey/SimpleWordCloud'
 
-export default async function ResultatsPage(props) {
-  const { authenticated } = props
-
-  var mounted = use([false])
+export default function ResultatsPage() {
+  var mounted = useState(false)
   var setMounted = mounted[1]
   mounted = mounted[0]
 
-  var sidState = use([''])
-  var setSid = sidState[1]
-  sidState = sidState[0]
+  var sid = useState('')
+  var setSid = sid[1]
+  sid = sid[0]
 
-  var data = use([null])
+  var data = useState(null)
   var setData = data[1]
   data = data[0]
 
-  var loading = use([true])
+  var loading = useState(true)
   var setLoading = loading[1]
   loading = loading[0]
 
-  var error = use([''])
+  var error = useState('')
   var setError = error[1]
   error = error[0]
 
-  var formations = use([[]])
+  var formations = useState({})
   var setFormations = formations[1]
   formations = formations[0]
 
   useEffect(function () {
+    if (typeof window === 'undefined') return
     var params = new URLSearchParams(window.location.search)
     var s = params.get('session') || ''
     setSid(s)
@@ -40,7 +39,7 @@ export default async function ResultatsPage(props) {
   useEffect(function () {
     if (!mounted) return
 
-    // Charger les formations depuis l'API /api/sessions
+    // Charger la liste des formations
     fetch('/api/sessions')
       .then(function (res) {
         if (!res.ok) throw new Error('Erreur chargement sessions')
@@ -48,8 +47,8 @@ export default async function ResultatsPage(props) {
       })
       .then(function (sessions) {
         var formatted = {}
-        sessions.forEach(function (s) {
-          formatted[s.id] = s.title
+        Object.entries(sessions).forEach(function (entry) {
+          formatted[entry[0]] = entry[1].label
         })
         setFormations(formatted)
       })
@@ -57,12 +56,13 @@ export default async function ResultatsPage(props) {
         console.error('Erreur chargement sessions:', e)
       })
 
-    if (!sidState) {
+    if (!sid) {
       setLoading(false)
       return
     }
+
     setLoading(true)
-    fetch('/api/session/' + encodeURIComponent(sidState))
+    fetch('/api/session/' + encodeURIComponent(sid))
       .then(function (res) {
         if (!res.ok) throw new Error('Formation non trouvée')
         return res.json()
@@ -75,7 +75,7 @@ export default async function ResultatsPage(props) {
         setError(e.message || 'Erreur')
         setLoading(false)
       })
-  }, [mounted, sidState])
+  }, [mounted, sid])
 
   function handleExport() {
     if (!data) return
@@ -83,12 +83,26 @@ export default async function ResultatsPage(props) {
     var url = URL.createObjectURL(blob)
     var a = document.createElement('a')
     a.href = url
-    a.download = 'keywords-' + sidState + '.json'
+    a.download = 'resultats-' + sid + '.json'
     a.click()
     URL.revokeObjectURL(url)
   }
 
-  // Server + first client render: always show loader (prevents hydration mismatch)
+  // Stats calculées
+  function getStats() {
+    if (!data) return null
+    var needs = data.keywords ? data.keywords.attentes || {} : {}
+    var fears = data.keywords ? data.keywords.craintes || {} : {}
+    return {
+      totalParticipants: data.participantCount || 0,
+      uniqueNeeds: Object.keys(needs).length,
+      uniqueFears: Object.keys(fears).length,
+      totalNeedsMentions: Object.values(needs).reduce(function (a, b) { return a + b }, 0),
+      totalFearsMentions: Object.values(fears).reduce(function (a, b) { return a + b }, 0),
+    }
+  }
+
+  // Server + first client render: always show loader
   if (!mounted) {
     return (
       <AdminLayout>
@@ -101,36 +115,50 @@ export default async function ResultatsPage(props) {
   }
 
   // No session selected: show formations list to pick one
-  if (!sidState) {
+  if (!sid) {
     var entries = Object.entries(formations)
     return (
       <AdminLayout>
         <Head><title>Résultats - Sondage IA Admin</title></Head>
-        <div className="container mx-auto px-4 py-8">
-          <h1 className="text-2xl font-bold mb-6">Résultats par formation</h1>
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+          <div>
+            <h1 className="text-2xl font-bold text-white tracking-tight">Résultats</h1>
+            <p className="text-sm text-white/50 mt-1">Sélectionnez une formation pour voir ses résultats</p>
+          </div>
+          <div className="glass-surface rounded-xl px-6 py-4">
+            <p className="text-3xl font-bold text-white">{entries.length}</p>
+            <p className="text-xs text-white/40">formation{entries.length !== 1 ? 's' : ''}</p>
+          </div>
+        </div>
+
+        {entries.length === 0 ? (
+          <div className="glass-surface p-12 text-center">
+            <p className="text-white/50">Aucune formation disponible</p>
+          </div>
+        ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {entries.map(function (e) {
               var id = e[0]
               var title = e[1]
               return (
-                <div
+                <button
                   key={id}
-                  className="border rounded-lg p-4 hover:bg-gray-50 cursor-pointer transition-colors"
-                  onClick=function () {
-                    setSid(id)
-                  }
+                  onClick={function () { setSid(id) }}
+                  className="glass-surface rounded-xl p-6 text-left hover:bg-white/[0.15] transition-colors"
                 >
-                  <h3 className="font-medium">{title}</h3>
-                </div>
+                  <h3 className="font-semibold text-white mb-1">{title}</h3>
+                  <p className="text-sm text-white/40 font-mono">{id}</p>
+                </button>
               )
             })}
           </div>
-        </div>
+        )}
       </AdminLayout>
     )
   }
 
-  // Session selected: show results with loader on error
+  // Loading state
   if (loading) {
     return (
       <AdminLayout>
@@ -142,111 +170,130 @@ export default async function ResultatsPage(props) {
     )
   }
 
+  // Error state
   if (error) {
     return (
       <AdminLayout>
         <Head><title>Résultats - Sondage IA Admin</title></Head>
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center py-12">
-            <p className="text-xl text-red-600 mb-4">{error}</p>
-            <button
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-              onClick=function () {
-                window.history.back()
-              }
-            >
-              Retour
-            </button>
-          </div>
+        <div className="text-center py-12">
+          <p className="text-xl text-transilio-red mb-4">{error}</p>
+          <button
+            onClick={function () { window.history.back() }}
+            className="btn-secondary"
+          >
+            Retour
+          </button>
         </div>
       </AdminLayout>
     )
   }
 
-  // Success: render the results
+  // Success: render results with word clouds
+  var stats = getStats()
+  var needsData = data.keywords ? data.keywords.attentes || {} : {}
+  var fearsData = data.keywords ? data.keywords.craintes || {} : {}
+
   return (
     <AdminLayout>
       <Head><title>Résultats - Sondage IA Admin</title></Head>
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-2xl font-bold mb-2">
-              Résultats : {data.survey?.title || data.survey?.name || sidState}
-            </h1>
-            <p className="text-gray-600">
-              Participants : {data.survey?.participants?.length || 0}
-            </p>
-          </div>
-          <button
-            className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-            onClick={handleExport}
-            disabled={!data}
-          >
-            Exporter
-          </button>
-        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4">Cartes des mots-clés</h2>
-            <div className="space-y-6">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Étudiant</span>
-                <span className="text-xs text-gray-500">
-                  {data.survey?.participants?.find(p => p.role === 'stagiaire')?.name || '-'}
-                </span>
-              </div>
-              {data.survey?.wordclouds?.find(c => c.type === 'stagiaire') && (
-                <div className="mb-6">
-                  <SimpleWordCloud
-                    cloud={data.survey.wordclouds.find(c => c.type === 'stagiaire')}
-                  />
-                </div>
-              )}
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Formateur</span>
-                <span className="text-xs text-gray-500">
-                  {data.survey?.participants?.find(p => p.role === 'formateur')?.name || '-'}
-                </span>
-              </div>
-              {data.survey?.wordclouds?.find(c => c.type === 'formateur') && (
-                <div>
-                  <SimpleWordCloud
-                    cloud={data.survey.wordclouds.find(c => c.type === 'formateur')}
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4">Détails du sondage</h2>
-            {data.survey?.instructions && (
-              <div className="mb-4 text-sm text-gray-600">
-                <strong>Instructions :</strong>
-                <p>{data.survey.instructions}</p>
-              </div>
-            )}
-            {data.survey?.questions && (
-              <div>
-                <h3 className="text-sm font-medium mb-2">Questions</h3>
-                <ul className="space-y-2 text-sm">
-                  {data.survey.questions.map(function (q) {
-                    return (
-                      <li key={q.id} className="flex justify-between">
-                        <span>{q.text || 'Question'}</span>
-                        <span className="text-gray-500">
-                          {q.type === 'cloud' ? 'Mots-clés' : q.type === 'yesno' ? 'Oui/Non' : 'Texte'}
-                        </span>
-                      </li>
-                    )
-                  })}
-                </ul>
-              </div>
-            )}
-          </div>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-white tracking-tight">
+            Résultats : {data.label || sid}
+          </h1>
+          <p className="text-sm text-white/50 mt-1">
+            Code : <span className="font-mono text-white/70">{sid}</span> &bull; {stats.totalParticipants} participant{stats.totalParticipants !== 1 ? 's' : ''}
+          </p>
         </div>
+        <button
+          onClick={handleExport}
+          className="btn-primary-whole px-4 py-2 text-sm"
+        >
+          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          Exporter
+        </button>
       </div>
+
+      {/* Dashboard Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        {[
+          { label: 'Participants', value: stats.totalParticipants, icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' },
+          { label: 'Attentes uniques', value: stats.uniqueNeeds, icon: 'M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z' },
+          { label: 'Craintes uniques', value: stats.uniqueFears, icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z' },
+          { label: 'Total mentions', value: stats.totalNeedsMentions + stats.totalFearsMentions, icon: 'M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z' },
+        ].map(function (stat, i) {
+          return (
+            <div key={i} className="glass-surface rounded-xl p-5">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-8 h-8 bg-transilio-electric/20 rounded-lg flex items-center justify-center">
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={stat.icon} />
+                  </svg>
+                </div>
+                <span className="text-xs text-white/40">{stat.label}</span>
+              </div>
+              <p className="text-2xl font-bold text-white">{stat.value}</p>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Word Clouds side by side */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <SimpleWordCloud
+          data={needsData}
+          title="Attentes des stagiaires"
+          color="#2F3CED"
+        />
+        <SimpleWordCloud
+          data={fearsData}
+          title="Craintes des stagiaires"
+          color="#FF5340"
+        />
+      </div>
+
+      {/* Raw responses list (collapsible detail) */}
+      {(data.responses && data.responses.length > 0) && (
+        <div className="mt-8 glass-surface rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-white mb-4">Réponses détaillées</h3>
+          <div className="space-y-3">
+            {data.responses.map(function (response, idx) {
+              return (
+                <div key={response.id || idx} className="bg-white/5 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xs font-mono bg-transilio-electric/20 text-white px-2 py-0.5 rounded">
+                      {response.id}
+                    </span>
+                    <span className="text-xs text-white/40">
+                      {new Date(response.submittedAt).toLocaleString('fr-FR')}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {(response.needs || []).map(function (word, i) {
+                      return (
+                        <span key={'n' + i} className="px-2 py-0.5 bg-blue-500/20 text-blue-300 text-xs rounded">
+                          {word}
+                        </span>
+                      )
+                    })}
+                    {(response.fears || []).map(function (word, i) {
+                      return (
+                        <span key={'f' + i} className="px-2 py-0.5 bg-red-500/20 text-red-300 text-xs rounded">
+                          {word}
+                        </span>
+                      )
+                    })}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
     </AdminLayout>
   )
 }

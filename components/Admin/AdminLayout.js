@@ -19,7 +19,6 @@ export default function AdminLayout({ children }) {
 
   const links = [
     { href: '/admin/sessions', label: 'Formations', icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10' },
-    { href: '/admin/resultats', label: 'Résultats', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6M9 19h12M9 19H4m12-7v6m0-6a2 2 0 012-2h3a2 2 0 012 2v6m-7-7v6m0-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6' },
   ]
 
   function isActive(href) {
