@@ -2,6 +2,256 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom Animation Keyframes */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(255, 83, 64, 0.4), 0 0 40px rgba(255, 83, 64, 0.2); }
+  50% { box-shadow: 0 0 40px rgba(255, 83, 64, 0.6), 0 0 60px rgba(255, 83, 64, 0.3); }
+}
+
+/* Animation Classes */
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.8s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* Import Inter font for timeless-classic aesthetic */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Transilio Color System - Timeless Classic Design with Dark Background */
+
+  /* Primary Colors */
+  --transilio-blue: #0F1459;
+  --transilio-red: #FF5340;
+  --transilio-white: #FFFFFF;
+
+  /* Secondary Colors */
+  --transilio-black: #000000;
+  --transilio-electric: #2F3CED;
+  --transilio-blue-light: #F0F1FF;
+  --transilio-red-dark: #730B00;
+  --transilio-red-light: #FFEDEB;
+
+  /* Semantic Tokens - Dark Theme */
+  --color-primary: var(--transilio-white);
+  --color-accent: var(--transilio-red);
+  --color-background: var(--transilio-blue);
+  --color-surface: rgba(255, 255, 255, 0.08);
+  --color-surface-hover: rgba(255, 255, 255, 0.12);
+  --color-text: var(--transilio-white);
+  --color-text-muted: rgba(255, 255, 255, 0.6);
+  --color-text-subtle: rgba(255, 255, 255, 0.4);
+  --color-border: rgba(255, 255, 255, 0.15);
+  --color-border-hover: rgba(255, 255, 255, 0.25);
+
+  /* Success/Error States */
+  --color-success: #34D399;
+  --color-success-bg: rgba(52, 211, 153, 0.15);
+  --color-error: var(--transilio-red);
+  --color-error-bg: var(--transilio-red-light);
+
+  /* Typography Scale - Timeless Classic */
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Spacing Scale */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+
+  /* Shadows - Subtle glow on dark */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3);
+
+  /* Border Radius - Refined corners */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 200ms ease;
+  --transition-slow: 300ms ease;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-sans);
+  background-color: var(--color-background);
+  color: var(--color-text);
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+/* Timeless Classic Typography on Dark */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--color-text);
+}
+
+h1 { font-size: 1.875rem; letter-spacing: -0.025em; }
+h2 { font-size: 1.5rem; letter-spacing: -0.02em; }
+h3 { font-size: 1.25rem; }
+h4 { font-size: 1.125rem; }
+
+/* Focus styles - Accessible and refined */
+*:focus-visible {
+  outline: 2px solid var(--transilio-electric);
+  outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+  background-color: var(--transilio-electric);
+  color: white;
+}
+
+/* Scrollbar styling for dark theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Component Utilities - Dark Theme */
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-6 py-3 bg-white text-transilio-blue font-semibold rounded-classic;
+    @apply transition-all duration-200 ease-out;
+    @apply hover:bg-transilio-blue-light hover:shadow-lg;
+    @apply active:scale-[0.98];
+    @apply disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-6 py-3 bg-transparent text-white font-medium rounded-classic border border-white/30;
+    @apply transition-all duration-200 ease-out;
+    @apply hover:bg-white/10 hover:border-white/50;
+    @apply active:scale-[0.98];
+  }
+
+  .btn-accent {
+    @apply inline-flex items-center justify-center px-6 py-3 bg-transilio-red text-white font-semibold rounded-classic;
+    @apply transition-all duration-200 ease-out;
+    @apply hover:bg-opacity-90 hover:shadow-md;
+    @apply active:scale-[0.98];
+  }
+
+  .card {
+    @apply bg-white/10 backdrop-blur-sm rounded-lg border border-white/10;
+    @apply transition-all duration-200;
+    @apply hover:bg-white/[0.15] hover:border-white/20;
+  }
+
+  .card-solid {
+    @apply bg-white rounded-lg shadow-md;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 bg-white/10 border border-white/20 rounded-classic;
+    @apply text-white placeholder:text-white/40;
+    @apply transition-all duration-200;
+    @apply focus:outline-none focus:border-transilio-electric focus:bg-white/15 focus:ring-2 focus:ring-transilio-electric/30;
+  }
+
+  .input-field-light {
+    @apply w-full px-4 py-3 bg-white border border-transilio-blue/20 rounded-classic;
+    @apply text-transilio-blue placeholder:text-transilio-blue/40;
+    @apply transition-all duration-200;
+    @apply focus:outline-none focus:border-transilio-electric focus:ring-2 focus:ring-transilio-electric/20;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-white/80 mb-1.5;
+  }
+
+  .error-message {
+    @apply text-sm text-transilio-red mt-1.5;
+  }
+
+  .nav-link {
+    @apply px-4 py-2 text-sm font-medium text-white/70 rounded-classic;
+    @apply transition-colors duration-150;
+    @apply hover:text-white hover:bg-white/10;
+  }
+
+  .nav-link-active {
+    @apply bg-white text-transilio-blue hover:bg-white hover:text-transilio-blue;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent;
+  }
+
+  /* Glassmorphism Effect */
+  .glass {
+    @apply bg-white/10 backdrop-blur-sm border border-white/20;
+  }
+
+  .glass:hover {
+    @apply bg-white/15 border-white/30;
+  }
+
+  /* Custom Rounded Corners */
+  .rounded-classic {
+    @apply rounded-[2rem];
+  }
+
+  /* Brand Color Classes */
+  .bg-transilio-electric {
+    @apply bg-[#2F3CED];
+  }
 }

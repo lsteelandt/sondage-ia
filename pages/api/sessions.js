@@ -1,59 +1,56 @@
-const path = require('path')
-const { readJsonFile, writeJsonFile, ensureDir, generateHexId } = require('../../lib/utils')
+import { MongoClient } from 'mongodb'
 
-const FORMATIONS_PATH = path.join(process.cwd(), 'data', 'formations', 'formations.json')
+const uri = process.env.MONGODB_URI
+const options = {
+  maxPoolSize: 10,
+  minPoolSize: 0,
+  socketTimeoutMS: 45000,
+  family: 4
+}
 
-module.exports = async function handler(req, res) {
+const client = new MongoClient(uri, options)
+const db = client.db('sondage')
+
+export default async function handler(req, res) {
   try {
     if (req.method === 'GET') {
-      const formations = await readJsonFile(FORMATIONS_PATH)
-      return res.status(200).json(formations)
+      // Charger toutes les sessions depuis MongoDB
+      const sessions = await db.collection('survey').find({}).toArray()
+
+      // Formater pour l'admin : { [sessionId]: sessionName }
+      var formatted = {}
+      sessions.forEach(function (s) {
+        formatted[s.id] = s.name
+      })
+
+      return res.status(200).json(formatted)
     }
 
     if (req.method === 'POST') {
-      const { label } = req.body
-      if (!label) {
-        return res.status(400).json({ error: 'Le label est requis' })
+      const { id, name } = req.body
+
+      if (!id || !name) {
+        return res.status(400).json({ error: 'id et name sont requis' })
       }
 
-      const formations = await readJsonFile(FORMATIONS_PATH)
-      const sessionId = generateHexId()
-
-      formations[sessionId] = {
-        label,
-        createdAt: new Date().toISOString(),
-        stagiaireCount: 0,
+      // Créer la session
+      const survey = {
+        id,
+        name,
+        surname: '',
+        fear: '',
+        fears: '',
+        wordcloud: '',
+        feedback: '',
+        createdAt: new Date().toISOString()
       }
 
-      await writeJsonFile(FORMATIONS_PATH, formations)
+      await db.collection('survey').insertOne(survey)
 
-      const sessionDir = path.join(process.cwd(), 'data', 'formations', sessionId)
-      await ensureDir(sessionDir)
-      await writeJsonFile(path.join(sessionDir, 'stagiaires.json'), {})
-      await writeJsonFile(path.join(sessionDir, 'keywords.json'), {})
+      // Mettre à jour le compteur de participants
+      await db.collection('survey').updateOne({ id }, { $inc: { participantCount: 1 } })
 
-      return res.status(201).json({ sessionId, label })
-    }
-
-    if (req.method === 'DELETE') {
-      const { sessionId } = req.body
-      if (!sessionId) {
-        return res.status(400).json({ error: 'Le sessionId est requis' })
-      }
-
-      const formations = await readJsonFile(FORMATIONS_PATH)
-      if (!formations[sessionId]) {
-        return res.status(404).json({ error: 'Formation non trouvée' })
-      }
-
-      delete formations[sessionId]
-      await writeJsonFile(FORMATIONS_PATH, formations)
-
-      const fs = require('fs/promises')
-      const sessionDir = path.join(process.cwd(), 'data', 'formations', sessionId)
-      await fs.rm(sessionDir, { recursive: true }).catch(() => {})
-
-      return res.status(200).json({ success: true })
+      return res.status(201).json({ id, name })
     }
 
     return res.status(405).json({ error: 'Méthode non autorisée' })

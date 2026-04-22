@@ -1,60 +1,119 @@
-const path = require('path')
-const { readJsonFile, writeJsonFile } = require('../../../lib/utils')
+import { MongoClient } from 'mongodb'
 
-const FORMATIONS_DIR = path.join(process.cwd(), 'data', 'formations')
-const FORMATIONS_PATH = path.join(FORMATIONS_DIR, 'formations.json')
+const uri = process.env.MONGODB_URI
+const options = {
+  maxPoolSize: 10,
+  minPoolSize: 0,
+  socketTimeoutMS: 45000,
+  family: 4
+}
 
-module.exports = async function handler(req, res) {
+const client = new MongoClient(uri, options)
+const db = client.db('sondage')
+
+export default async function handler(req, res) {
   const { sessionId } = req.query
   if (!sessionId) {
     return res.status(400).json({ error: 'sessionId est requis' })
   }
 
   try {
-    const formations = await readJsonFile(FORMATIONS_PATH)
-    if (!formations[sessionId]) {
+    // Vérifier que la session existe
+    const existingSession = await db.collection('survey').findOne({ id: sessionId })
+    if (!existingSession) {
       return res.status(404).json({ error: 'Formation non trouvée' })
     }
 
-    const sessionDir = path.join(FORMATIONS_DIR, sessionId)
-    const stagiairesPath = path.join(sessionDir, 'stagiaires.json')
-    const keywordsPath = path.join(sessionDir, 'keywords.json')
-
     if (req.method === 'GET') {
-      const stagiaires = await readJsonFile(stagiairesPath)
-      const keywords = await readJsonFile(keywordsPath)
+      // Récupérer toutes les réponses pour cette session
+      const responses = await db.collection('survey').find({ id: sessionId }).toArray()
+
+      // Agréger par participant
+      var participantMap = {}
+      responses.forEach(function (r) {
+        if (!participantMap[r.participantId]) {
+          participantMap[r.participantId] = {
+            participantId: r.participantId,
+            attentes: [],
+            craintes: []
+          }
+        }
+        ;(participantMap[r.participantId].attentes || []).push(...(r.attentes || []))
+        ;(participantMap[r.participantId].craintes || []).push(...(r.craintes || []))
+      })
+
+      // Normaliser les mots-clés (retirer les accents, mettre en minuscule)
+      function normalizeKeyword(kw) {
+        return kw
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .trim()
+      }
+
+      // Regrouper les mots-clés
+      var aggregatedParticipants = []
+      Object.entries(participantMap).forEach(function ([participantId, data]) {
+        const entry = { participantId }
+
+        // Regrouper les mots-clés attendus
+        const setAttentes = new Set()
+        data.attentes.forEach(function (kw) {
+          const key = normalizeKeyword(kw)
+          setAttentes.add(key)
+        })
+        entry.attentes = Array.from(setAttentes)
+
+        // Regrouper les mots-clés craints
+        const setCraintes = new Set()
+        data.craintes.forEach(function (kw) {
+          const key = normalizeKeyword(kw)
+          setCraintes.add(key)
+        })
+        entry.craintes = Array.from(setCraintes)
+
+        aggregatedParticipants.push(entry)
+      })
+
+      // Trier par nombre de craintes (décroissant)
+      aggregatedParticipants.sort(function (a, b) {
+        return b.craintes.length - a.craintes.length
+      })
 
       return res.status(200).json({
-        stagiaires,
-        keywords,
-        info: formations[sessionId],
+        responses: aggregatedParticipants,
+        info: existingSession
       })
     }
 
     if (req.method === 'POST') {
-      const { stagiaireId, attentes, craintes } = req.body
-      if (!stagiaireId) {
-        return res.status(400).json({ error: 'stagiaireId est requis' })
+      const { participantId, attentes, craintes } = req.body
+      if (!participantId) {
+        return res.status(400).json({ error: 'participantId est requis' })
       }
 
-      // Save stagiaire response
-      const stagiaires = await readJsonFile(stagiairesPath)
-      stagiaires[stagiaireId] = { attentes: attentes || [], craintes: craintes || [] }
-      await writeJsonFile(stagiairesPath, stagiaires)
+      // Vérifier que l'utilisateur n'a pas déjà répondu
+      const existingResponse = await db.collection('survey').findOne({
+        id: sessionId,
+        'participantId': participantId
+      })
 
-      // Update keyword counts
-      const keywords = await readJsonFile(keywordsPath)
-      for (const kw of (attentes || [])) {
-        keywords[kw] = (keywords[kw] || 0) + 1
+      if (existingResponse) {
+        return res.status(400).json({ error: 'Déjà répondu à ce sondage' })
       }
-      for (const kw of (craintes || [])) {
-        keywords[kw] = (keywords[kw] || 0) + 1
-      }
-      await writeJsonFile(keywordsPath, keywords)
 
-      // Update stagiaireCount in formations.json
-      formations[sessionId].stagiaireCount = Object.keys(stagiaires).length
-      await writeJsonFile(FORMATIONS_PATH, formations)
+      // Créer une nouvelle réponse
+      const response = {
+        participantId,
+        attentes: attentes || [],
+        craintes: craintes || [],
+        createdAt: new Date().toISOString()
+      }
+
+      await db.collection('survey').insertOne({
+        id: sessionId,
+        ...response
+      })
 
       return res.status(200).json({ success: true })
     }

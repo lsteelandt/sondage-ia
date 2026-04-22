@@ -6,10 +6,27 @@ out/
 .env.development.local
 .env.test.local
 .env.production.local
+# Fichiers sensibles (ne pas versionner)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 data/admin.json
+data/config/settings.json
+
+# Données MongoDB (si utilisation du filesystem)
 data/formations/
+data/survey/
+
+# Fichiers IDE
 .vscode/
 .idea/
+
+# Fichiers système
 .DS_Store
 Thumbs.db
+
+# Logs
 npm-debug.log*
+*.log

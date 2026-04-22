@@ -1,0 +1,495 @@
+{
+  "nodes": [
+    {
+      "id": "claude_think_before_coding",
+      "label": "Think Before Coding Principle",
+      "file_type": "document",
+      "source_file": "CLAUDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "claude_simplicity_first",
+      "label": "Simplicity First Principle",
+      "file_type": "document",
+      "source_file": "CLAUDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "claude_surgical_changes",
+      "label": "Surgical Changes Principle",
+      "file_type": "document",
+      "source_file": "CLAUDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "claude_goal_driven_execution",
+      "label": "Goal-Driven Execution Principle",
+      "file_type": "document",
+      "source_file": "CLAUDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "impl_plan_nextjs_stack",
+      "label": "Next.js Tech Stack",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-04-20-sondage-ia-implementation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "impl_plan_auth_system",
+      "label": "Authentication System",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-04-20-sondage-ia-implementation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "impl_plan_data_management",
+      "label": "Data Management System",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-04-20-sondage-ia-implementation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "impl_plan_survey_interface",
+      "label": "Public Survey Interface",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-04-20-sondage-ia-implementation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "impl_plan_admin_interface",
+      "label": "Admin Interface",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-04-20-sondage-ia-implementation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "impl_plan_wordcloud",
+      "label": "Word Cloud Visualization",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-04-20-sondage-ia-implementation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "spec_survey_application",
+      "label": "Sondage IA Application",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-20-sondage-ia-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "spec_architecture",
+      "label": "System Architecture",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-20-sondage-ia-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "spec_flux_admin",
+      "label": "Admin User Flow",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-20-sondage-ia-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "spec_flux_stagiaire",
+      "label": "Stagiaire User Flow",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-20-sondage-ia-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "spec_storage_formations",
+      "label": "Formations Data Structure",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-20-sondage-ia-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "spec_storage_stagiaires",
+      "label": "Stagiaires Data Structure",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-20-sondage-ia-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "spec_security",
+      "label": "Security Requirements",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-20-sondage-ia-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "spec_dependencies",
+      "label": "Project Dependencies",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-20-sondage-ia-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "impl_plan_nextjs_stack",
+      "target": "spec_architecture",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-04-20-sondage-ia-implementation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "impl_plan_auth_system",
+      "target": "spec_security",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-04-20-sondage-ia-implementation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "impl_plan_data_management",
+      "target": "spec_storage_formations",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-04-20-sondage-ia-implementation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "impl_plan_data_management",
+      "target": "spec_storage_stagiaires",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-04-20-sondage-ia-implementation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "impl_plan_survey_interface",
+      "target": "spec_flux_stagiaire",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-04-20-sondage-ia-implementation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "impl_plan_admin_interface",
+      "target": "spec_flux_admin",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-04-20-sondage-ia-implementation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "impl_plan_wordcloud",
+      "target": "spec_architecture",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-04-20-sondage-ia-implementation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "spec_survey_application",
+      "target": "spec_architecture",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-20-sondage-ia-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "spec_survey_application",
+      "target": "spec_flux_admin",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-20-sondage-ia-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "spec_survey_application",
+      "target": "spec_flux_stagiaire",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-20-sondage-ia-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "spec_survey_application",
+      "target": "spec_storage_formations",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-20-sondage-ia-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "spec_survey_application",
+      "target": "spec_storage_stagiaires",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-20-sondage-ia-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "spec_survey_application",
+      "target": "spec_security",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-20-sondage-ia-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "spec_survey_application",
+      "target": "spec_dependencies",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-20-sondage-ia-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "impl_plan_nextjs_stack",
+      "target": "spec_dependencies",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-04-20-sondage-ia-implementation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "claude_think_before_coding",
+      "target": "spec_survey_application",
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "CLAUDE.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "claude_simplicity_first",
+      "target": "impl_plan_nextjs_stack",
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "CLAUDE.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "claude_surgical_changes",
+      "target": "impl_plan_data_management",
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "CLAUDE.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "claude_goal_driven_execution",
+      "target": "impl_plan_survey_interface",
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "CLAUDE.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "impl_plan_survey_interface",
+      "target": "impl_plan_wordcloud",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/2026-04-20-sondage-ia-implementation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "impl_plan_admin_interface",
+      "target": "impl_plan_wordcloud",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/2026-04-20-sondage-ia-implementation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "impl_plan_auth_system",
+      "target": "impl_plan_admin_interface",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-04-20-sondage-ia-implementation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "impl_plan_data_management",
+      "target": "impl_plan_survey_interface",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-04-20-sondage-ia-implementation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "impl_plan_data_management",
+      "target": "impl_plan_admin_interface",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-04-20-sondage-ia-implementation.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "survey_application_components",
+      "label": "Survey Application Core Components",
+      "nodes": [
+        "impl_plan_auth_system",
+        "impl_plan_data_management",
+        "impl_plan_survey_interface",
+        "impl_plan_admin_interface",
+        "impl_plan_wordcloud"
+      ],
+      "relation": "form",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "docs/superpowers/plans/2026-04-20-sondage-ia-implementation.md"
+    },
+    {
+      "id": "claude_principles",
+      "label": "Claude Coding Principles",
+      "nodes": [
+        "claude_think_before_coding",
+        "claude_simplicity_first",
+        "claude_surgical_changes",
+        "claude_goal_driven_execution"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md"
+    },
+    {
+      "id": "specification_sections",
+      "label": "Specification Document Sections",
+      "nodes": [
+        "spec_survey_application",
+        "spec_architecture",
+        "spec_flux_admin",
+        "spec_flux_stagiaire",
+        "spec_storage_formations",
+        "spec_storage_stagiaires",
+        "spec_security",
+        "spec_dependencies"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-20-sondage-ia-design.md"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

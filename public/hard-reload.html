@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8">
+<title>Recharger Sondage</title>
+</head>
+<body>
+<h1>Rechargement...</h1>
+<script>
+localStorage.clear()
+sessionStorage.clear()
+setTimeout(() => {
+  window.location.href = window.location.href.split('?')[0] + '?reload=' + Date.now()
+}, 500)
+</script>
+</body>
+</html>

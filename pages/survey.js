@@ -1,394 +1,357 @@
-import { useState, useEffect } from 'react'
+// pages/survey.js
+import Head from 'next/head'
+import Image from 'next/image'
 import { useRouter } from 'next/router'
+import { useState } from 'react'
+
+const SURVEY_STEPS = [
+  { id: 'welcome', label: 'Bienvenue', component: 'Welcome' },
+  { id: 'info', label: 'Informations', component: 'InfoForm' },
+  { id: 'craintes', label: 'Craintes', component: 'FearSelector' },
+  { id: 'wordcloud', label: 'Nuage de mots', component: 'SimpleWordCloud' },
+  { id: 'review', label: 'Revue', component: 'ReviewForm' },
+  { id: 'complete', label: 'Terminé', component: 'Completion' }
+]
 
 export default function SurveyPage() {
   const router = useRouter()
-  const { session: sessionId } = router.query
+  const [currentStep, setCurrentStep] = useState('welcome')
+  const [formData, setFormData] = useState({
+    id: null,
+    surname: '',
+    name: '',
+    fear: '',
+    fears: '',
+    wordcloud: '',
+    feedback: ''
+  })
 
-  const [currentStep, setCurrentStep] = useState(0)
-  const [stagiaireCode, setStagiaireCode] = useState('')
-  const [inputCode, setInputCode] = useState('')
-  const [sessionInput, setSessionInput] = useState('')
-  const [attentes, setAttentes] = useState('')
-  const [selectedCraintes, setSelectedCraintes] = useState([])
-  const [autreCrainte, setAutreCrainte] = useState('')
-  const [craintesOptions, setCraintesOptions] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [sessionValid, setSessionValid] = useState(null)
-
-  // Wait for router to be ready
-  useEffect(function () {
-    if (!router.isReady) return
-    if (sessionId) {
-      setCurrentStep(1)
+  const handleNext = () => {
+    const nextStepIndex = SURVEY_STEPS.findIndex(s => s.id === currentStep)
+    if (nextStepIndex < SURVEY_STEPS.length - 1) {
+      setCurrentStep(SURVEY_STEPS[nextStepIndex + 1].id)
+      localStorage.setItem('surveyStep', currentStep)
     }
-  }, [router.isReady, sessionId])
-
-  // Fetch craintes options when entering step 3
-  useEffect(function () {
-    if (currentStep === 3 && craintesOptions.length === 0) {
-      fetch('/api/craintes')
-        .then(function (res) { return res.json() })
-        .then(function (data) {
-          setCraintesOptions(data.craintes || [])
-        })
-        .catch(function () { setCraintesOptions([]) })
-    }
-  }, [currentStep])
-
-  // Step 0: Submit session code
-  function handleSessionSubmit(e) {
-    e.preventDefault()
-    const code = sessionInput.trim()
-    if (!code) return
-    router.push('/survey?session=' + code)
   }
 
-  // Step 1: Generate new code
-  async function handleGenerate() {
-    setLoading(true)
-    setError('')
+  const handleBack = () => {
+    const prevStepIndex = SURVEY_STEPS.findIndex(s => s.id === currentStep)
+    if (prevStepIndex > 0) {
+      setCurrentStep(SURVEY_STEPS[prevStepIndex - 1].id)
+    }
+  }
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
     try {
-      const res = await fetch('/api/session/' + sessionId + '/stagiaire', {
+      const url = process.env.NEXT_PUBLIC_API_URL + '/api/session'
+      await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'generate' }),
+        body: JSON.stringify(formData)
       })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Erreur')
-      setStagiaireCode(data.code)
-    } catch (err) {
-      setError(err.message)
+      router.push('/survey-complete')
+    } catch (error) {
+      console.error('Erreur lors de la soumission:', error)
     }
-    setLoading(false)
   }
 
-  // Step 1: Verify existing code
-  async function handleVerify() {
-    setLoading(true)
-    setError('')
-    try {
-      const res = await fetch('/api/session/' + sessionId + '/stagiaire', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'verify', code: inputCode.trim().toUpperCase() }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Erreur')
-      if (!data.exists) {
-        setError('Code non reconnu. Vérifiez ou créez un nouveau code.')
-        setLoading(false)
-        return
-      }
-      setStagiaireCode(data.code)
-      setCurrentStep(2)
-    } catch (err) {
-      setError(err.message)
-    }
-    setLoading(false)
+  const handleInfoChange = (e) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  // Step 2: Submit attentes
-  function handleAttentesSubmit(e) {
-    e.preventDefault()
-    setCurrentStep(3)
+  const handleFearChange = (value) => {
+    const selectedFear = typeof value === 'string' ? value : value.label
+    setFormData(prev => ({ ...prev, fear: selectedFear, fears: selectedFear }))
   }
 
-  // Toggle a crainte checkbox
-  function toggleCrainte(id) {
-    setSelectedCraintes(function (prev) {
-      return prev.includes(id)
-        ? prev.filter(function (c) { return c !== id })
-        : prev.concat([id])
-    })
+  const handleWordCloudChange = (value) => {
+    setFormData(prev => ({ ...prev, wordcloud: value }))
   }
 
-  // Step 3: Submit craintes and save everything
-  async function handleFinalSubmit(e) {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
-
-    var allCraintes = selectedCraintes.slice()
-    if (autreCrainte.trim()) {
-      allCraintes.push(autreCrainte.trim())
-    }
-
-    // Convert attentes text to keywords (split by commas, semicolons, newlines, trim)
-    var attentesKeywords = attentes
-      .split(/[,;\n]+/)
-      .map(function (s) { return s.trim() })
-      .filter(function (s) { return s.length > 0 })
-
-    try {
-      const res = await fetch('/api/session/' + sessionId, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          stagiaireId: stagiaireCode,
-          attentes: attentesKeywords,
-          craintes: allCraintes,
-        }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Erreur')
-      setCurrentStep(4)
-    } catch (err) {
-      setError(err.message)
-    }
-    setLoading(false)
+  const handleReviewChange = (name, value) => {
+    setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  // Progress dots
-  function ProgressDots() {
-    var steps = [1, 2, 3]
-    return (
-      <div className="flex items-center justify-center gap-2 mb-8">
-        {steps.map(function (step) {
-          var isActive = step === currentStep
-          var isDone = step < currentStep
-          return (
-            <div
-              key={step}
-              className={
-                'rounded-full transition-all duration-300 ' +
-                (isActive
-                  ? 'w-8 h-3 bg-indigo-600'
-                  : isDone
-                  ? 'w-3 h-3 bg-indigo-400'
-                  : 'w-3 h-3 bg-gray-300')
-              }
-            />
-          )
-        })}
-      </div>
-    )
-  }
-
-  // ---- STEP 0: No session ----
-  if (currentStep === 0) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="w-full max-w-sm">
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Sondage IA</h1>
-            <p className="text-gray-500">Entrez le code de votre session</p>
-          </div>
-          <form onSubmit={handleSessionSubmit} className="space-y-4">
-            <input
-              type="text"
-              value={sessionInput}
-              onChange={function (e) { setSessionInput(e.target.value) }}
-              placeholder="Code session"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg text-center text-lg uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              autoFocus
-            />
-            <button
-              type="submit"
-              disabled={!sessionInput.trim()}
-              className="w-full py-3 px-4 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              Continuer
-            </button>
-          </form>
-        </div>
-      </div>
-    )
-  }
-
-  // ---- STEP 4: Merci ----
-  if (currentStep === 4) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="text-center">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Merci !</h1>
-          <p className="text-gray-500">Vos r&eacute;ponses ont &eacute;t&eacute; enregistr&eacute;es.</p>
-          {stagiaireCode && (
-            <p className="mt-4 text-sm text-gray-400">
-              Votre code : <span className="font-mono font-bold text-gray-600">{stagiaireCode}</span>
-            </p>
-          )}
-        </div>
-      </div>
-    )
-  }
-
-  // ---- STEPS 1-3: Wizard with progress ----
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <ProgressDots />
+    <>
+      <Head>
+        <title>{SURVEY_STEPS.find(s => s.id === currentStep).label} - Sondage Transilio</title>
+        <meta name="description" content="Participez au sondage Transilio" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
 
-        {/* Step 1: Stagiaire code */}
-        {currentStep === 1 && (
-          <div className="space-y-6">
-            <div className="text-center">
-              <h2 className="text-xl font-bold text-gray-900 mb-2">Avez-vous un code stagiaire ?</h2>
-              <p className="text-sm text-gray-500">Si vous avez d&eacute;j&agrave; particip&eacute;, entrez votre code.</p>
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 animate-fade-in relative overflow-hidden">
+        <div className="absolute top-20 left-10 w-64 h-64 bg-transilio-electric/20 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-20 right-10 w-48 h-48 bg-transilio-red/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }} />
+
+        <div className="glass rounded-2xl p-8 shadow-glow max-w-2xl w-full">
+          {/* Progress Bar */}
+          <div className="mb-6">
+            <div className="flex justify-between mb-2">
+              {SURVEY_STEPS.map((step, index) => (
+                <div key={step.id} className="flex flex-col items-center">
+                  <div className={`w-3 h-3 rounded-full ${
+                    currentStep === step.id ? 'bg-transilio-electric' :
+                    index < SURVEY_STEPS.findIndex(s => s.id === currentStep) ? 'bg-transilio-electric' : 'bg-gray-600'
+                  }`} />
+                  <span className="text-xs text-white/60 mt-1 hidden sm:block">{step.label}</span>
+                </div>
+              ))}
             </div>
+            <div className="w-full bg-gray-700 h-1 rounded-full">
+              <div
+                className="bg-transilio-electric h-1 rounded-full transition-all duration-300"
+                style={{ width: `${((SURVEY_STEPS.findIndex(s => s.id === currentStep) + 1) / SURVEY_STEPS.length) * 100}%` }}
+              />
+            </div>
+          </div>
 
-            {error && (
-              <div className="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-lg">{error}</div>
-            )}
-
-            {!stagiaireCode ? (
+          {/* Step Content */}
+          <div className="text-center">
+            {currentStep === 'welcome' && (
               <div className="space-y-4">
-                <div>
-                  <input
-                    type="text"
-                    value={inputCode}
-                    onChange={function (e) { setInputCode(e.target.value.toUpperCase()) }}
-                    placeholder="Votre code stagiaire"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg text-center text-lg uppercase tracking-widest font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    maxLength={10}
-                  />
-                  <button
-                    onClick={handleVerify}
-                    disabled={!inputCode.trim() || loading}
-                    className="w-full mt-3 py-3 px-4 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    {loading ? 'V&eacute;rification...' : 'Continuer'}
-                  </button>
-                </div>
-
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-200"></div>
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-3 bg-gray-50 text-gray-400">ou</span>
-                  </div>
-                </div>
-
+                <h1 className="text-4xl font-bold text-white mb-4">Bienvenue sur le sondage Transilio</h1>
+                <p className="text-lg text-white/80 max-w-md mx-auto">
+                  Ce questionnaire est conçu pour améliorer nos produits et services. Vos réponses anonymes nous aideront à mieux vous connaître.
+                </p>
                 <button
-                  onClick={handleGenerate}
-                  disabled={loading}
-                  className="w-full py-3 px-4 border-2 border-indigo-600 text-indigo-600 font-medium rounded-lg hover:bg-indigo-50 transition-colors disabled:opacity-50"
-                >
-                  Nouveau participant
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
-                  <p className="text-sm text-green-700 mb-2">Votre code personnel</p>
-                  <p className="text-3xl font-mono font-bold text-green-800 tracking-widest">{stagiaireCode}</p>
-                  <p className="text-xs text-green-600 mt-2">Notez ce code pour pouvoir revenir</p>
-                </div>
-                <button
-                  onClick={function () { setCurrentStep(2) }}
-                  className="w-full py-3 px-4 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+                  onClick={handleNext}
+                  className="btn-primary w-full"
                 >
                   Commencer
                 </button>
               </div>
             )}
-          </div>
-        )}
 
-        {/* Step 2: Attentes */}
-        {currentStep === 2 && (
-          <form onSubmit={handleAttentesSubmit} className="space-y-6">
-            <div className="text-center">
-              <h2 className="text-xl font-bold text-gray-900 mb-2">
-                Qu&apos;attendez-vous comme aide de l&apos;IA ?
-              </h2>
-              <p className="text-sm text-gray-500">
-                D&eacute;crivez vos attentes. S&eacute;parez les id&eacute;es par des virgules.
-              </p>
-            </div>
+            {currentStep === 'info' && (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <h2 className="text-3xl font-bold text-white mb-6">Vos informations</h2>
 
-            {error && (
-              <div className="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-lg">{error}</div>
-            )}
-
-            <textarea
-              value={attentes}
-              onChange={function (e) { setAttentes(e.target.value) }}
-              placeholder="Ex : gain de temps, aide à la rédaction, automatisation des tâches répétitives..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
-              rows={5}
-              autoFocus
-            />
-
-            <button
-              type="submit"
-              disabled={!attentes.trim()}
-              className="w-full py-3 px-4 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              Suivant
-            </button>
-          </form>
-        )}
-
-        {/* Step 3: Craintes */}
-        {currentStep === 3 && (
-          <form onSubmit={handleFinalSubmit} className="space-y-6">
-            <div className="text-center">
-              <h2 className="text-xl font-bold text-gray-900 mb-2">
-                Quelles craintes vous g&eacute;n&egrave;re l&apos;IA ?
-              </h2>
-              <p className="text-sm text-gray-500">Cochez les craintes qui vous concernent.</p>
-            </div>
-
-            {error && (
-              <div className="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-lg">{error}</div>
-            )}
-
-            <div className="space-y-2">
-              {craintesOptions.map(function (opt) {
-                var checked = selectedCraintes.indexOf(opt.id) >= 0
-                return (
-                  <label
-                    key={opt.id}
-                    className={
-                      'flex items-center gap-3 px-4 py-3 rounded-lg border cursor-pointer transition-colors ' +
-                      (checked
-                        ? 'border-indigo-600 bg-indigo-50'
-                        : 'border-gray-200 bg-white hover:bg-gray-50')
-                    }
-                  >
+                <div className="space-y-4">
+                  <div>
+                    <label className="label">Noms de famille</label>
                     <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={function () { toggleCrainte(opt.id) }}
-                      className="w-5 h-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
+                      type="text"
+                      name="surname"
+                      value={formData.surname}
+                      onChange={handleInfoChange}
+                      placeholder="Votre nom de famille"
+                      required
+                      className="input-field"
                     />
-                    <span className={'text-sm ' + (checked ? 'text-indigo-900 font-medium' : 'text-gray-700')}>
-                      {opt.label}
-                    </span>
-                  </label>
-                )
-              })}
-            </div>
+                  </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Autre :</label>
-              <input
-                type="text"
-                value={autreCrainte}
-                onChange={function (e) { setAutreCrainte(e.target.value) }}
-                placeholder="Pr&eacute;cisez si n&eacute;cessaire..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              />
-            </div>
+                  <div>
+                    <label className="label">Prénom</label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInfoChange}
+                      placeholder="Votre prénom"
+                      required
+                      className="input-field"
+                    />
+                  </div>
+                </div>
 
-            <button
-              type="submit"
-              disabled={selectedCraintes.length === 0 && !autreCrainte.trim()}
-              className="w-full py-3 px-4 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {loading ? 'Enregistrement...' : 'Terminer'}
-            </button>
-          </form>
-        )}
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={handleBack}
+                    className="btn-secondary flex-1"
+                  >
+                    Retour
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn-primary flex-1"
+                  >
+                    Continuer
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {currentStep === 'craintes' && (
+              <div className="space-y-4">
+                <h2 className="text-3xl font-bold text-white mb-6">Quelles craintes vous accompagnent ?</h2>
+
+                <div className="grid grid-cols-2 gap-3 mb-6">
+                  {['Anxiété', 'Perte de contrôle', 'Isolement', 'Insécurité'].map((fear) => (
+                    <button
+                      key={fear}
+                      onClick={() => handleFearChange(fear)}
+                      className={`p-4 rounded-xl text-left transition-all ${
+                        formData.fear === fear
+                          ? 'bg-transilio-electric text-white shadow-lg'
+                          : 'bg-white/10 text-white/80 hover:bg-white/20'
+                      }`}
+                    >
+                      <div className="font-semibold">{fear}</div>
+                    </button>
+                  ))}
+                </div>
+
+                <textarea
+                  value={formData.fears}
+                  onChange={(e) => setFormData(prev => ({ ...prev, fears: e.target.value }))}
+                  placeholder="Décrivez vos craintes..."
+                  rows={3}
+                  className="input-field"
+                />
+
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={handleBack}
+                    className="btn-secondary flex-1"
+                  >
+                    Retour
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleNext}
+                    className="btn-primary flex-1"
+                    disabled={!formData.fears}
+                  >
+                    Continuer
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {currentStep === 'wordcloud' && (
+              <div className="space-y-4">
+                <h2 className="text-3xl font-bold text-white mb-6">Nuage de mots</h2>
+
+                <p className="text-white/80 mb-4">
+                  Associez une idée à la peur sélectionnée ci-dessus.
+                </p>
+
+                {formData.fear && (
+                  <>
+                    <div className="p-4 bg-white/10 rounded-xl mb-4">
+                      <div className="text-xs text-white/60 mb-1">
+                        {formData.fear === 'Anxiété' && 'Ex: Je suis angoissé à l\'idée de'}
+                        {formData.fear === 'Perte de contrôle' && 'Ex: J\'ai peur de perdre le contrôle sur'}
+                        {formData.fear === 'Isolement' && 'Ex: Je crains de perdre mes relations'}
+                        {formData.fear === 'Insécurité' && 'Ex: Je crains de'}
+                      </div>
+                      <div className="font-semibold text-white">
+                        {formData.fear === 'Anxiété' && 'm'}
+                        {formData.fear === 'Perte de contrôle' && 't'}
+                        {formData.fear === 'Isolement' && 'r'}
+                        {formData.fear === 'Insécurité' && 'n'}
+                      </div>
+                    </div>
+
+                    <textarea
+                      value={formData.wordcloud}
+                      onChange={(e) => handleWordCloudChange(e.target.value)}
+                      placeholder="Ajoutez une idée..."
+                      rows={4}
+                      className="input-field"
+                    />
+
+                    <button
+                      onClick={() => handleWordCloudChange(formData.wordcloud + ' - ' + formData.fear)}
+                      className="btn-primary w-full"
+                    >
+                      Sauvegarder
+                    </button>
+                  </>
+                )}
+
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={handleBack}
+                    className="btn-secondary flex-1"
+                  >
+                    Retour
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {currentStep === 'review' && (
+              <div className="space-y-4">
+                <h2 className="text-3xl font-bold text-white mb-6">Revue finale</h2>
+
+                <div className="p-4 bg-white/5 rounded-xl mb-4">
+                  <div className="text-sm text-white/60 mb-2">Résultats :</div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-white/80">Nom :</span>
+                      <span className="text-white font-medium">{formData.surname}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-white/80">Prénom :</span>
+                      <span className="text-white font-medium">{formData.name}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-white/80">Crain :</span>
+                      <span className="text-white font-medium">{formData.fear}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-white/80">Mot :</span>
+                      <span className="text-white font-medium">{formData.wordcloud}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="label">Commentaires (optionnel)</label>
+                  <textarea
+                    name="feedback"
+                    value={formData.feedback}
+                    onChange={handleReviewChange}
+                    placeholder="Avez-vous des remarques ou suggestions ?"
+                    rows={3}
+                    className="input-field"
+                  />
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={handleBack}
+                    className="btn-secondary flex-1"
+                  >
+                    Modifier
+                  </button>
+                  <button
+                    type="submit"
+                    onClick={handleSubmit}
+                    className="btn-primary flex-1 btn-accent"
+                  >
+                    Valider
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {currentStep === 'complete' && (
+              <div className="space-y-4 animate-scale-in">
+                <div className="text-6xl mb-4">✓</div>
+                <h2 className="text-3xl font-bold text-white mb-4">Terminé !</h2>
+                <p className="text-lg text-white/80">
+                  Merci pour votre participation. Votre contribution nous aide à améliorer nos produits et services.
+                </p>
+                <button
+                  onClick={() => router.push('/')}
+                  className="btn-primary w-full mt-6"
+                >
+                  Retour à l\'accueil
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   )
 }
