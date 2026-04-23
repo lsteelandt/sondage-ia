@@ -14,6 +14,11 @@
   },
   "emailFrom": "formation@transilio.fr",
   "emailSubject": "Vos réponses au sondage IA",
+  "ia": {
+    "provider": "ollama",
+    "model": "mistral",
+    "ollama_url": "http://localhost:11434"
+  },
   "craintes": [
     { "id": "remplacement", "label": "Remplacement de mon métier" },
     { "id": "securite", "label": "Sécurité des données" },

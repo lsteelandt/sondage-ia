@@ -41,6 +41,8 @@ export default async function handler(req, res) {
           attentes: needsAgg,
           craintes: fearsAgg,
         },
+        // Termes normalisés par l'IA
+        normalizedKeywords: sessionData.normalizedKeywords || null,
       })
     }
 
