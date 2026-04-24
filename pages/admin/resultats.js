@@ -342,7 +342,7 @@ export default function ResultatsPage() {
 
 
       {/* Word Clouds side by side */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-32 mb-6">
         <SimpleWordCloud
           data={hasNormalized ? normalizedNeeds : needsData}
           title={hasNormalized ? "Attentes normalisées" : "Attentes des stagiaires"}
@@ -357,9 +357,9 @@ export default function ResultatsPage() {
         />
       </div>
 
-      {/* Raw responses list (collapsible detail) */}
+      {/* Raw responses list - scrollable */}
       {(data.responses && data.responses.length > 0) && (
-        <div className="mt-8 glass-surface rounded-xl p-6">
+        <div className="glass-surface rounded-xl p-6 max-h-[50vh] overflow-y-auto">
           <h3 className="text-lg font-semibold text-white mb-4">Réponses détaillées</h3>
           <div className="space-y-3">
             {data.responses.map(function (response, idx) {
