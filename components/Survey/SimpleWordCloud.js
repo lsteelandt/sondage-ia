@@ -51,18 +51,19 @@ export default function SimpleWordCloud({ data, title, color, normalized }) {
           var tooltipId = 'tooltip-' + word.replace(/\s+/g, '-')
 
           return (
-            <span
-              key={word}
-              style={{
-                fontSize: fontSize + 'px',
-                color: wordColor,
-                opacity: opacity,
-                lineHeight: 1.2
-              }}
-              className="font-medium cursor-default relative group"
-            >
-              {word}
-              <span className="text-xs opacity-50 ml-1">({count})</span>
+            <span key={word} className="relative group">
+              <span
+                style={{
+                  fontSize: fontSize + 'px',
+                  color: wordColor,
+                  opacity: opacity,
+                  lineHeight: 1.2
+                }}
+                className="font-medium cursor-default"
+              >
+                {word}
+                <span className="text-xs opacity-50 ml-1">({count})</span>
+              </span>
 
               {/* Tooltip */}
               {normalized && originals.length > 0 && (

@@ -28,8 +28,13 @@ function isSeparatorTerm(term) {
 }
 
 function cleanTerm(term) {
-  // Remove surrounding quotes and trim
-  var cleaned = term.replace(/^["']|["']$/g, '').trim()
+  // Remove Markdown formatting (bold, italic) and surrounding quotes, then trim
+  var cleaned = term
+    .replace(/\*\*(.+?)\*\*/g, '$1')  // Remove **bold**
+    .replace(/__(.+?)__/g, '$1')       // Remove __bold__
+    .replace(/\*(.+?)\*/g, '$1')        // Remove *italic*
+    .replace(/_(.+?)_/g, '$1')          // Remove _italic_
+    .replace(/^["']|["']$/g, '').trim()
   return cleaned
 }
 
@@ -47,15 +52,18 @@ function parseNormalizedOutput(content, termList) {
       var rawTerm = pipeMatch[1].trim()
       var term = cleanTerm(rawTerm)
       var originalsStr = pipeMatch[2].trim()
-      var count = parseInt(pipeMatch[3], 10) || 1
 
-      var originals = originalsStr.split(',').map(function(s) { return s.trim() }).filter(function(s) { return s })
+      var originals = originalsStr.split(',').map(function(s) { return s.trim() }).filter(function(s) { return s && s.length > 2 })
+
+      // Use IA-provided count as fallback, but trust the originals.length
+      var iaCount = parseInt(pipeMatch[3], 10) || 1
+      var count = originals.length > 0 ? originals.length : iaCount
 
       if (term && term.length > 0 && !isSeparatorTerm(term)) {
         results.push({
           term: term,
           occurrences: count,
-          originals: originals.length > 0 ? originals : [term]
+          originals: originals
         })
       }
       continue
@@ -68,13 +76,13 @@ function parseNormalizedOutput(content, termList) {
       var term = cleanTerm(rawTerm)
       var originalsStr = pipeNoCount[2].trim()
 
-      var originals = originalsStr.split(',').map(function(s) { return s.trim() }).filter(function(s) { return s })
+      var originals = originalsStr.split(',').map(function(s) { return s.trim() }).filter(function(s) { return s && s.length > 2 })
 
       if (term && term.length > 0 && !isSeparatorTerm(term)) {
         results.push({
           term: term,
-          occurrences: 1,
-          originals: originals.length > 0 ? originals : [term]
+          occurrences: originals.length > 0 ? originals.length : 1,
+          originals: originals
         })
       }
     }
@@ -143,8 +151,8 @@ export default async function handler(req, res) {
     var needsPrompt = needsPromptTemplate.replace('{terms}', needsList.join('\n'))
     var fearsPrompt = fearsPromptTemplate.replace('{terms}', fearsList.join('\n'))
 
-    var needsResult = await callIa(apiUrl, provider, model, apiKey, needsPrompt, needsList)
-    var fearsResult = await callIa(apiUrl, provider, model, apiKey, fearsPrompt, fearsList)
+    var needsResult = await callIa(apiUrl, provider, model, apiKey, needsPrompt, needsList, 'ATTENTES')
+    var fearsResult = await callIa(apiUrl, provider, model, apiKey, fearsPrompt, fearsList, 'CRAINTES')
 
     sessions[sessionId].normalizedKeywords = {
       attentes: needsResult,
@@ -163,7 +171,7 @@ export default async function handler(req, res) {
   }
 }
 
-async function callIa(apiUrl, provider, model, apiKey, prompt, termList) {
+async function callIa(apiUrl, provider, model, apiKey, prompt, termList, label) {
   var headers = { 'Content-Type': 'application/json' }
   var body
 
@@ -174,18 +182,31 @@ async function callIa(apiUrl, provider, model, apiKey, prompt, termList) {
     body = { model: model, messages: [{ role: 'user', content: prompt }], max_tokens: 2048 }
   }
 
+  console.error('=== IA REQUEST [' + label + '] ===')
+  console.error('URL:', apiUrl)
+  console.error('Model:', model)
+  console.error('Prompt:', prompt)
+  console.error('=============================')
+
   var response = await fetch(apiUrl, {
     method: 'POST',
     headers: headers,
     body: JSON.stringify(body),
   })
 
-  if (!response.ok) {
+  var data
+  try {
+    data = await response.json()
+  } catch (e) {
     var errorText = await response.text()
-    throw new Error('IA API error: ' + response.status + ' - ' + errorText)
+    console.error('IA API response parsing error:', e.message, 'Body:', errorText)
+    throw new Error('IA API response parsing error: ' + e.message + ' - ' + errorText)
   }
 
-  var data = await response.json()
+  if (!response.ok) {
+    var errorMessage = data?.error?.message || data?.error || JSON.stringify(data)
+    throw new Error('IA API error: ' + response.status + ' - ' + errorMessage)
+  }
 
   var content
   if (provider === 'ollama') {
@@ -194,7 +215,14 @@ async function callIa(apiUrl, provider, model, apiKey, prompt, termList) {
     content = data.choices?.[0]?.message?.content || ''
   }
 
-  console.error('OLLAMA RESPONSE:', content)
+  console.error('=== IA RESPONSE [' + label + '] ===')
+  console.error(content)
+  console.error('=============================')
 
-  return parseNormalizedOutput(content, termList)
+  try {
+    return parseNormalizedOutput(content, termList)
+  } catch (e) {
+    console.error('parseNormalizedOutput error:', e.message)
+    throw new Error('Parse error: ' + e.message)
+  }
 }

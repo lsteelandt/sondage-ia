@@ -12,6 +12,8 @@ Règles de normalisation :
 FORMAT DE SORTIE OBLIGATOIRE - Une ligne par terme normalisé :
 TERME_NORMALISE | expression1, expression2 | nombre
 
+ATTENTION ! Aucune mise enforme gras, italique ou autre à appliquer sur les lignes à produire. 
+
 Exemples de sortie attendue :
 Sécurité des données | piratage, fuites de données, confidentialité | 4
 Dépendance | dépendance excessive, perte d'autonomie | 3

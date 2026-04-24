@@ -340,29 +340,6 @@ export default function ResultatsPage() {
         </div>
       )}
 
-      {/* Dashboard Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        {[
-          { label: 'Participants', value: stats.totalParticipants, icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' },
-          { label: 'Attentes uniques', value: stats.uniqueNeeds, icon: 'M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z' },
-          { label: 'Craintes uniques', value: stats.uniqueFears, icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z' },
-          { label: 'Total mentions', value: stats.totalNeedsMentions + stats.totalFearsMentions, icon: 'M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z' },
-        ].map(function (stat, i) {
-          return (
-            <div key={i} className="glass-surface rounded-xl p-5">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-8 h-8 bg-transilio-electric/20 rounded-lg flex items-center justify-center">
-                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={stat.icon} />
-                  </svg>
-                </div>
-                <span className="text-xs text-white/40">{stat.label}</span>
-              </div>
-              <p className="text-2xl font-bold text-white">{stat.value}</p>
-            </div>
-          )
-        })}
-      </div>
 
       {/* Word Clouds side by side */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

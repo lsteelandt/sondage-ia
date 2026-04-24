@@ -16,7 +16,7 @@
   "emailSubject": "Vos réponses au sondage IA",
   "ia": {
     "provider": "ollama",
-    "model": "mistral",
+    "model": "mistral-large-3:675b-cloud",
     "ollama_url": "http://localhost:11434"
   },
   "craintes": [
