@@ -138,7 +138,24 @@ async function callIa(apiUrl, provider, model, apiKey, prompt, termList, label) 
     headers['Authorization'] = 'Bearer ' + apiKey
     body = { model, messages: [{ role: 'user', content: prompt }], max_tokens: 2048, temperature: 0 }
   }
-  var response = await fetch(apiUrl, { method: 'POST', headers, body: JSON.stringify(body) })
+  var response
+  try {
+    response = await fetch(apiUrl, { method: 'POST', headers, body: JSON.stringify(body) })
+  } catch (fetchErr) {
+    // Distingue les erreurs de transport (service IA injoignable) des
+    // erreurs de l'IA elle-même. Permet au caller de renvoyer 503
+    // (service_unavailable) plutôt que 500 (internal_error) générique.
+    var cause = fetchErr && fetchErr.cause
+    var code = cause && cause.code
+    var hint = ''
+    if (code === 'ECONNREFUSED') hint = ' (service IA injoignable — vérifiez que le service tourne sur ' + apiUrl + ')'
+    else if (code === 'ENOTFOUND') hint = ' (hôte introuvable — vérifiez l\'URL du service IA)'
+    else if (code === 'ETIMEDOUT' || fetchErr.name === 'AbortError') hint = ' (timeout — service IA trop lent ou injoignable)'
+    var wrapped = new Error('IA service unreachable' + hint + ': ' + (fetchErr.message || fetchErr))
+    wrapped.code = 'IA_UNREACHABLE'
+    wrapped.causeCode = code || null
+    throw wrapped
+  }
   var data
   try {
     data = await response.json()
@@ -269,6 +286,12 @@ export default async function handler(req, res) {
     })
   } catch (error) {
     console.error('analyze error:', error)
+    // Distingue les erreurs de transport (service IA injoignable) des
+    // erreurs métier. 503 = dépendances externes HS, le client peut
+    // réessayer. 500 = bug interne.
+    if (error && error.code === 'IA_UNREACHABLE') {
+      return res.status(503).json({ error: 'ia_unreachable', message: error.message, causeCode: error.causeCode })
+    }
     return res.status(500).json({ error: 'internal_error', message: error.message })
   }
 }

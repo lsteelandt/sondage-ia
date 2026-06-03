@@ -30,8 +30,6 @@
     "url": "https://api.pushover.net/1/messages.json",
     "events": ["tenant.created", "tenant.deleted"],
     "pushover": {
-      "token": "ax6x5xe8xzyjo1vk9s1gs1fnqshtmd",
-      "user": "u1Mv27LMoodaEYBCT1pjLtcU1JgJtF",
       "title": "Sondage IA",
       "priority": 1,
       "sound": "pianobar"
