@@ -24,7 +24,7 @@
   "ia": {
     "provider": "ollama",
     "model": "mistral-large-3:675b-cloud",
-    "ollama_url": "http://localhost:11434"
+    "ollama_url": "http://192.168.50.48:11434"
   },
   "webhook": {
     "url": "https://api.pushover.net/1/messages.json",
