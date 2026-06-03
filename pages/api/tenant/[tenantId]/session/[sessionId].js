@@ -19,6 +19,7 @@
 
 import { getTenantSessions, writeTenantSessions, recordActivity, maybeRunPurge, withMutex } from '../../../../../lib/tenants.js'
 import { isValidTenantId } from '../../../../../lib/validate.js'
+import { getTenantFromRequest } from '../../../../../lib/auth.js'
 
 export default async function handler(req, res) {
   const { tenantId, sessionId } = req.query
@@ -52,7 +53,12 @@ export default async function handler(req, res) {
         })
       })
 
-      return res.status(200).json({
+      // Si l'appelant est authentifié comme admin du tenant, on lui renvoie
+      // aussi `responses` (réponses nominatives) pour qu'il puisse afficher
+      // le détail dans la page de résultats. Sans auth, on masque pour éviter
+      // qu'un destinataire du lien de sondage exfiltre la base.
+      const auth = await getTenantFromRequest(req, tenantId)
+      const payload = {
         id: sessionData.id,
         label: sessionData.label,
         createdAt: sessionData.createdAt,
@@ -62,7 +68,11 @@ export default async function handler(req, res) {
           craintes: fearsAgg,
         },
         normalizedKeywords: sessionData.normalizedKeywords || null,
-      })
+      }
+      if (auth) {
+        payload.responses = sessionData.responses || []
+      }
+      return res.status(200).json(payload)
     }
 
     if (req.method === 'POST') {
