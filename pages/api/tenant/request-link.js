@@ -85,10 +85,11 @@ export default async function handler(req, res) {
     // Charge l'app URL pour bâtir le magic link
     const settings = await readJsonFile(SETTINGS_PATH)
     const appUrl = (settings.app && settings.app.url) || `http://localhost:${process.env.PORT || 3100}`
+    const allowedOrigins = settings.app && settings.app.allowedOrigins
 
     // CSRF : vérifier que l'origine correspond à l'app (best-effort).
     const origin = req.headers?.origin || req.headers?.referer || ''
-    if (origin && !isValidOrigin(origin, appUrl)) {
+    if (origin && !isValidOrigin(origin, appUrl, allowedOrigins)) {
       return res.status(403).json({ error: 'forbidden', reason: 'invalid_origin' })
     }
 

@@ -1,7 +1,11 @@
 {
   "app": {
     "name": "Sondage IA",
-    "url": "http://localhost:3100"
+    "url": "https://sondageia.transilio.fr",
+    "allowedOrigins": [
+      "https://sondageia.transilio.fr",
+      "http://localhost:3100"
+    ]
   },
   "session": {
     "cookieName": "survey_admin_session",
