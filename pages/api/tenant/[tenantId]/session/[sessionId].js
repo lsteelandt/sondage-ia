@@ -10,7 +10,7 @@
  * ce tenant.
  */
 
-import { getTenantSessions, writeTenantSessions, recordActivity, maybeRunPurge } from '../../../../../lib/tenants.js'
+import { getTenantSessions, writeTenantSessions, recordActivity, maybeRunPurge, withMutex } from '../../../../../lib/tenants.js'
 import { isValidTenantId } from '../../../../../lib/validate.js'
 
 export default async function handler(req, res) {
@@ -60,11 +60,6 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'POST') {
-      const sessionData = sessions[sessionId]
-      if (!sessionData) {
-        return res.status(404).json({ error: 'session_not_found' })
-      }
-
       const body = req.body || {}
       const response = {
         id: body.id || 'UNKNOWN',
@@ -73,16 +68,36 @@ export default async function handler(req, res) {
         fears: body.fears || [],
       }
 
-      if (!sessions[sessionId].responses) {
-        sessions[sessionId].responses = []
-      }
-      sessions[sessionId].responses.push(response)
-      sessions[sessionId].participantCount = sessions[sessionId].responses.length
+      // Sérialise le read-modify-write sur sessions[sessionId] par tenant.
+      // Sans ce mutex, deux POST simultanés peuvent lire le même `sessions`
+      // avant que l'un des deux n'ait écrit (writeJsonFile n'est pas
+      // atomique via tmp+rename) et écraser mutuellement leurs réponses.
+      const savedResponseId = await withMutex(tenantId, async () => {
+        const sessions = await getTenantSessions(tenantId)
+        const sessionData = sessions[sessionId]
+        if (!sessionData) {
+          return null
+        }
 
-      await writeTenantSessions(tenantId, sessions)
+        if (!sessions[sessionId].responses) {
+          sessions[sessionId].responses = []
+        }
+        sessions[sessionId].responses.push(response)
+        sessions[sessionId].participantCount = sessions[sessionId].responses.length
+
+        await writeTenantSessions(tenantId, sessions)
+        return response.id
+      })
+
+      if (savedResponseId == null) {
+        return res.status(404).json({ error: 'session_not_found' })
+      }
+
       // Best-effort : on garde la trace de la dernière activité sondé.
-      recordActivity(tenantId, { kind: 'respondent', code: response.id, sessionId })
-      return res.status(201).json({ success: true, id: response.id })
+      // On reste hors du mutex parent : recordActivity prend son propre
+      // mutex en interne, et il est fire-and-forget (pas d'await).
+      recordActivity(tenantId, { kind: 'respondent', code: savedResponseId, sessionId })
+      return res.status(201).json({ success: true, id: savedResponseId })
     }
 
     return res.status(405).json({ error: 'method_not_allowed' })
