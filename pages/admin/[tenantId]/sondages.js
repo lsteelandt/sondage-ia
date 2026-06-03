@@ -225,7 +225,7 @@ export default function TenantSondagesPage() {
 
       <div className="space-y-4">
         {entries.map(([id, info]) => {
-          const surveyUrl = `${origin}/c/${tenantId}?session=${id}`
+          const surveyUrl = `${origin}/survey?tenantId=${tenantId}&session=${id}`
           return (
             <div key={id} className="glass-surface rounded-xl p-6 hover:bg-white/[0.15] transition-colors">
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">

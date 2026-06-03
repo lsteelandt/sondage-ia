@@ -19,7 +19,7 @@ export default function AdminIndex() {
           reçu par email. Il ressemble à :
         </p>
         <code className="block bg-white/5 border border-white/10 rounded-lg p-3 text-xs text-white/60 mb-6 font-mono">
-          https://app/c/{'{tenantId}'}?token=...
+          https://app/admin/{'{tenantId}'}?token=...
         </code>
         <Link href="/" className="btn-primary inline-block">
           Retour à l&apos;accueil
