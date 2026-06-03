@@ -1,0 +1,60 @@
+{
+  "app": {
+    "name": "Sondage IA",
+    "url": "https://sondageia.transilio.fr",
+    "allowedOrigins": [
+      "https://sondageia.transilio.fr",
+      "http://localhost:3100"
+    ]
+  },
+  "session": {
+    "cookieName": "survey_admin_session",
+    "maxAgeMs": 1800000
+  },
+  "smtp": {
+    "host": "mail.transilio.fr",
+    "port": 587,
+    "secure": false
+  },
+  "emailFrom": "contact@transilio.fr",
+  "emailSubject": "Vos réponses au sondage IA",
+  "superAdmin": {
+    "email": "luc.steelandt@transilio.fr"
+  },
+  "ia": {
+    "provider": "ollama",
+    "model": "mistral-large-3:675b-cloud",
+    "ollama_url": "http://localhost:11434"
+  },
+  "webhook": {
+    "url": "https://api.pushover.net/1/messages.json",
+    "events": ["tenant.created", "tenant.deleted"],
+    "pushover": {
+      "token": "",
+      "user": "",
+      "title": "Sondage IA",
+      "priority": 1,
+      "sound": "pianobar"
+    }
+  },
+  "craintes": [
+    { "id": "remplacement", "label": "Remplacement de mon métier" },
+    { "id": "securite", "label": "Sécurité des données" },
+    { "id": "dependance", "label": "Dépendance excessive" },
+    { "id": "complexite", "label": "Complexité d'utilisation" },
+    { "id": "erreurs", "label": "Erreurs de décision" },
+    { "id": "biais", "label": "Biais discriminatoires" },
+    { "id": "competences", "label": "Perte de compétences" },
+    { "id": "cout", "label": "Coût d'implémentation" }
+  ],
+  "attentes": [
+    { "id": "efficience",    "label": "Gagner du temps / automatiser des tâches" },
+    { "id": "redaction",     "label": "Aide à la rédaction" },
+    { "id": "recherche",     "label": "Recherche d'information" },
+    { "id": "analyse",       "label": "Analyse de données" },
+    { "id": "synthese",      "label": "Synthèse de documents" },
+    { "id": "idees",         "label": "Génération d'idées / brainstorming" },
+    { "id": "apprentissage", "label": "Montée en compétences / formation" },
+    { "id": "repetitives",   "label": "Tâches répétitives" }
+  ]
+}

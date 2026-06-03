@@ -15,6 +15,8 @@ out/
 data/admin.json
 data/sessions.json
 data/*.json
+# Settings runtime (contient des secrets) : versionner settings.example.json à la place
+data/config/settings.json
 
 # Données de production multi-tenant (emails clients, magic links, analytics)
 data/tenants/
