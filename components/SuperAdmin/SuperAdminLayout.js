@@ -1,0 +1,87 @@
+/**
+ * SuperAdminLayout — header/nav partagés pour /super-admin/*.
+ * Affiche : Dashboard, Activité, Déconnexion.
+ */
+import { useRouter } from 'next/router'
+import { useState } from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
+
+export default function SuperAdminLayout({ active, children }) {
+  const router = useRouter()
+  const [loggingOut, setLoggingOut] = useState(false)
+
+  const links = [
+    { href: '/super-admin/dashboard', label: 'Sondages externes', key: 'dashboard' },
+    { href: '/super-admin/activity', label: 'Activité', key: 'activity' },
+  ]
+
+  async function handleLogout() {
+    setLoggingOut(true)
+    try {
+      await fetch('/api/super-admin/logout', { method: 'POST' })
+      window.location.href = '/super-admin/login'
+    } catch {
+      setLoggingOut(false)
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-transilio-blue relative overflow-hidden">
+      <div className="fixed inset-0 bg-[#0F1459] pointer-events-none" />
+      <div className="fixed top-20 left-10 w-96 h-96 bg-transilio-electric/20 rounded-full blur-3xl pointer-events-none" />
+
+      <nav className="relative z-50 bg-white/10 backdrop-blur-md border-b border-white/10 sticky top-0">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-3 min-w-0">
+              <Link href="/super-admin/dashboard" className="flex items-center gap-2 shrink-0" aria-label="Super-admin — accueil">
+                <Image
+                  src="/logo-transilio.png"
+                  alt="Transilio"
+                  width={120}
+                  height={27}
+                  className="drop-shadow-md"
+                  priority
+                />
+                <span className="text-white/70 text-xs font-medium px-2 py-0.5 bg-white/10 rounded">Super-admin</span>
+              </Link>
+            </div>
+
+            <div className="flex items-center gap-1">
+              {links.map(function (link) {
+                const activeLink = active === link.key
+                return (
+                  <Link
+                    key={link.key}
+                    href={link.href}
+                    className={
+                      'inline-flex items-center px-4 py-2 text-sm font-medium rounded-classic transition-all duration-200 ' +
+                      (activeLink
+                        ? 'bg-white text-transilio-blue shadow-md'
+                        : 'text-white/70 hover:text-white hover:bg-white/10')
+                    }
+                  >
+                    {link.label}
+                  </Link>
+                )
+              })}
+            </div>
+
+            <button
+              onClick={handleLogout}
+              disabled={loggingOut}
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white/60 hover:text-transilio-red hover:bg-transilio-red/10 rounded-classic transition-all duration-200 disabled:opacity-50"
+            >
+              {loggingOut ? 'Déconnexion...' : 'Déconnexion'}
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      <main className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-8">
+        {children}
+      </main>
+    </div>
+  )
+}
