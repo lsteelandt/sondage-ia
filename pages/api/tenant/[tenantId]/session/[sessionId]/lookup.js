@@ -14,10 +14,23 @@
 
 import { getTenantSessions, maybeRunPurge } from '../../../../../../lib/tenants.js'
 import { isValidTenantId } from '../../../../../../lib/validate.js'
+import { checkRateLimit } from '../../../../../../lib/rateLimit.js'
+
+// Les codes participants font 5 caractères phonétiques, soit 12×5×12×5×12 = 86 400
+// combinaisons par tenant. Sans rate limit, un attaquant peut brute-forcer toutes
+// les réponses en quelques minutes. On limite à 20 tentatives/min/IP.
+const LOOKUP_MAX = 20
+const LOOKUP_WINDOW_MS = 60 * 1000
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'method_not_allowed' })
+  }
+
+  const rl = checkRateLimit('session-lookup', req, { max: LOOKUP_MAX, windowMs: LOOKUP_WINDOW_MS })
+  if (!rl.allowed) {
+    res.setHeader('Retry-After', String(rl.retryAfterSec))
+    return res.status(429).json({ error: 'rate_limited', retryAfterSec: rl.retryAfterSec })
   }
 
   const { tenantId, sessionId } = req.query

@@ -165,7 +165,27 @@ async function callIa(apiUrl, provider, model, apiKey, prompt, termList, label) 
   }
   if (!response.ok) {
     var errorMessage = data?.error?.message || data?.error || JSON.stringify(data)
-    throw new Error('IA API error: ' + response.status + ' - ' + errorMessage)
+    // On classifie l'erreur HTTP renvoyée par l'IA pour permettre au caller
+    // de mapper vers un code HTTP et un code d'erreur cohérent.
+    // 401/403 → IA_AUTH_ERROR (clé absente ou invalide) → 500 serveur (notre config)
+    // 429     → IA_RATE_LIMITED (quota IA atteint) → 503 (réessayer plus tard)
+    // 4xx     → IA_BAD_REQUEST (prompt invalide, modèle inconnu) → 500 (notre code)
+    // 5xx     → IA_SERVER_ERROR (bug côté IA) → 502 (bad gateway)
+    var wrapped
+    if (response.status === 401 || response.status === 403) {
+      wrapped = new Error('IA API auth error: ' + response.status + ' - ' + errorMessage)
+      wrapped.code = 'IA_AUTH_ERROR'
+    } else if (response.status === 429) {
+      wrapped = new Error('IA API rate limited: ' + errorMessage)
+      wrapped.code = 'IA_RATE_LIMITED'
+    } else if (response.status >= 500) {
+      wrapped = new Error('IA API server error: ' + response.status + ' - ' + errorMessage)
+      wrapped.code = 'IA_SERVER_ERROR'
+    } else {
+      wrapped = new Error('IA API error: ' + response.status + ' - ' + errorMessage)
+      wrapped.code = 'IA_BAD_RESPONSE'
+    }
+    throw wrapped
   }
   var content = provider === 'ollama'
     ? (data.message?.content || '')
@@ -288,9 +308,21 @@ export default async function handler(req, res) {
     console.error('analyze error:', error)
     // Distingue les erreurs de transport (service IA injoignable) des
     // erreurs métier. 503 = dépendances externes HS, le client peut
-    // réessayer. 500 = bug interne.
+    // réessayer. 500 = bug interne. 502 = dépendance a renvoyé 5xx.
     if (error && error.code === 'IA_UNREACHABLE') {
       return res.status(503).json({ error: 'ia_unreachable', message: error.message, causeCode: error.causeCode })
+    }
+    if (error && error.code === 'IA_RATE_LIMITED') {
+      return res.status(503).json({ error: 'ia_rate_limited', message: error.message })
+    }
+    if (error && error.code === 'IA_SERVER_ERROR') {
+      return res.status(502).json({ error: 'ia_server_error', message: error.message })
+    }
+    if (error && error.code === 'IA_AUTH_ERROR') {
+      return res.status(500).json({ error: 'ia_auth_error', message: 'IA API auth failed — vérifier IA_API_KEY' })
+    }
+    if (error && error.code === 'IA_BAD_RESPONSE') {
+      return res.status(500).json({ error: 'ia_bad_response', message: error.message })
     }
     return res.status(500).json({ error: 'internal_error', message: error.message })
   }
