@@ -1,231 +1,367 @@
-# Graph Report - .  (2026-06-01)
+# Graph Report - .  (2026-06-03)
 
 ## Corpus Check
-- Corpus is ~22,309 words - fits in a single context window. You may not need a graph.
+- Corpus is ~49,758 words - fits in a single context window. You may not need a graph.
 
 ## Summary
-- 100 nodes · 124 edges · 25 communities detected
-- Extraction: 61% EXTRACTED · 39% INFERRED · 0% AMBIGUOUS · INFERRED: 48 edges (avg confidence: 0.82)
+- 333 nodes · 541 edges · 46 communities detected
+- Extraction: 61% EXTRACTED · 39% INFERRED · 0% AMBIGUOUS · INFERRED: 213 edges (avg confidence: 0.83)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
-- [[_COMMUNITY_Sessions & Settings API|Sessions & Settings API]]
-- [[_COMMUNITY_IA Analysis & Email|IA Analysis & Email]]
-- [[_COMMUNITY_IA Provider Adapters|IA Provider Adapters]]
-- [[_COMMUNITY_Admin Auth|Admin Auth]]
-- [[_COMMUNITY_Survey UI & Theming|Survey UI & Theming]]
-- [[_COMMUNITY_Admin Components|Admin Components]]
-- [[_COMMUNITY_Phonetic Code Generator|Phonetic Code Generator]]
-- [[_COMMUNITY_App Shell|App Shell]]
-- [[_COMMUNITY_Results Page|Results Page]]
-- [[_COMMUNITY_Sessions Admin Page|Sessions Admin Page]]
-- [[_COMMUNITY_Admin Home Page|Admin Home Page]]
-- [[_COMMUNITY_Graph Artifacts|Graph Artifacts]]
-- [[_COMMUNITY_Tailwind Config|Tailwind Config]]
-- [[_COMMUNITY_Next.js Config|Next.js Config]]
-- [[_COMMUNITY_PostCSS Config|PostCSS Config]]
-- [[_COMMUNITY_Think Before Coding|Think Before Coding]]
-- [[_COMMUNITY_Simplicity First|Simplicity First]]
-- [[_COMMUNITY_Surgical Changes|Surgical Changes]]
-- [[_COMMUNITY_Goal-Driven Execution|Goal-Driven Execution]]
-- [[_COMMUNITY_Admin Logout Handler|Admin Logout Handler]]
-- [[_COMMUNITY_Auth Form Submit|Auth Form Submit]]
-- [[_COMMUNITY_Survey Submit|Survey Submit]]
-- [[_COMMUNITY_Code Generation Handler|Code Generation Handler]]
-- [[_COMMUNITY_Results Analyze Handler|Results Analyze Handler]]
-- [[_COMMUNITY_Results Export Handler|Results Export Handler]]
+- [[_COMMUNITY_Tenant Admin UI & API|Tenant Admin UI & API]]
+- [[_COMMUNITY_Tenant Lifecycle & Session Handlers|Tenant Lifecycle & Session Handlers]]
+- [[_COMMUNITY_IA Analysis Pipeline & Prompts|IA Analysis Pipeline & Prompts]]
+- [[_COMMUNITY_RGPD Analytics & Stats|RGPD Analytics & Stats]]
+- [[_COMMUNITY_Super-Admin & Tenant Deletion|Super-Admin & Tenant Deletion]]
+- [[_COMMUNITY_Magic Link & Tenant Onboarding|Magic Link & Tenant Onboarding]]
+- [[_COMMUNITY_Admin Results & Sessions UI|Admin Results & Sessions UI]]
+- [[_COMMUNITY_Email Transport & Settings|Email Transport & Settings]]
+- [[_COMMUNITY_Webhooks (JSON + Pushover)|Webhooks (JSON + Pushover)]]
+- [[_COMMUNITY_Super-Admin Dashboard|Super-Admin Dashboard]]
+- [[_COMMUNITY_Analytics Tracker|Analytics Tracker]]
+- [[_COMMUNITY_Migration Scripts|Migration Scripts]]
+- [[_COMMUNITY_Survey Public Flow|Survey Public Flow]]
+- [[_COMMUNITY_Rate Limiting & Auth Libs|Rate Limiting & Auth Libs]]
+- [[_COMMUNITY_Auth Cookie Validation|Auth Cookie Validation]]
+- [[_COMMUNITY_Email Recap Endpoint|Email Recap Endpoint]]
+- [[_COMMUNITY_Word Cloud Component|Word Cloud Component]]
+- [[_COMMUNITY_Tenant Public Lookup|Tenant Public Lookup]]
+- [[_COMMUNITY_Tenant Formations API|Tenant Formations API]]
+- [[_COMMUNITY_Setup Check Endpoint|Setup Check Endpoint]]
+- [[_COMMUNITY_Public Survey Page|Public Survey Page]]
+- [[_COMMUNITY_Pinia|Pinia]]
+- [[_COMMUNITY_Cluster 22|Cluster 22]]
+- [[_COMMUNITY_Cluster 23|Cluster 23]]
+- [[_COMMUNITY_Cluster 24|Cluster 24]]
+- [[_COMMUNITY_Cluster 25|Cluster 25]]
+- [[_COMMUNITY_Cluster 26|Cluster 26]]
+- [[_COMMUNITY_Cluster 27|Cluster 27]]
+- [[_COMMUNITY_Cluster 28|Cluster 28]]
+- [[_COMMUNITY_Cluster 29|Cluster 29]]
+- [[_COMMUNITY_Cluster 30|Cluster 30]]
+- [[_COMMUNITY_Cluster 31|Cluster 31]]
+- [[_COMMUNITY_Cluster 32|Cluster 32]]
+- [[_COMMUNITY_Cluster 33|Cluster 33]]
+- [[_COMMUNITY_Cluster 34|Cluster 34]]
+- [[_COMMUNITY_Cluster 35|Cluster 35]]
+- [[_COMMUNITY_Cluster 36|Cluster 36]]
+- [[_COMMUNITY_Cluster 37|Cluster 37]]
+- [[_COMMUNITY_Cluster 38|Cluster 38]]
+- [[_COMMUNITY_Cluster 39|Cluster 39]]
+- [[_COMMUNITY_Cluster 40|Cluster 40]]
+- [[_COMMUNITY_Cluster 41|Cluster 41]]
+- [[_COMMUNITY_Cluster 42|Cluster 42]]
+- [[_COMMUNITY_Cluster 43|Cluster 43]]
+- [[_COMMUNITY_Cluster 44|Cluster 44]]
+- [[_COMMUNITY_Cluster 45|Cluster 45]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `readJsonFile()` - 14 edges
-2. `handler()` - 12 edges
-3. `SurveyPage()` - 10 edges
-4. `API handler /api/sessions (GET/POST/DELETE formations)` - 10 edges
-5. `handler()` - 8 edges
-6. `handler()` - 8 edges
-7. `writeJsonFile()` - 7 edges
-8. `handler()` - 7 edges
-9. `callIa()` - 7 edges
-10. `readFileSync()` - 6 edges
+1. `handler()` - 19 edges
+2. `isValidTenantId()` - 18 edges
+3. `createTenant()` - 16 edges
+4. `getTenant()` - 13 edges
+5. `SurveyPage()` - 13 edges
+6. `getTenantSessions()` - 12 edges
+7. `handler()` - 12 edges
+8. `handler()` - 11 edges
+9. `withMutex()` - 10 edges
+10. `purgeStaleTenants()` - 10 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `settings.json configuration schema` --rationale_for--> `handler()`  [INFERRED]
-  docs/superpowers/specs/2026-04-20-sondage-ia-design.md → pages/api/admin/logout.js
-- `settings.json configuration schema` --rationale_for--> `handler()`  [INFERRED]
-  docs/superpowers/specs/2026-04-20-sondage-ia-design.md → pages/api/admin/auth.js
-- `handler()` --implements--> `Task 5: Formation Management API (plan)`  [INFERRED]
-  pages/api/admin/analyze.js → docs/superpowers/plans/2026-04-20-sondage-ia-implementation.md
+- `Survey objective (collect AI expectations + fears)` --rationale_for--> `handler()`  [INFERRED]
+  docs/superpowers/specs/2026-04-20-sondage-ia-design.md → pages/api/admin/analyze.js
 - `hardReload()` --conceptually_related_to--> `handler()`  [INFERRED]
   public/hard-reload.html → pages/api/session/[sessionId].js
-- `handler()` --implements--> `Step 4: Thank you + email recap`  [INFERRED]
-  pages/api/session/[sessionId]/email.js → docs/superpowers/specs/2026-04-20-sondage-ia-design.md
+- `Survey objective (collect AI expectations + fears)` --rationale_for--> `handler()`  [INFERRED]
+  docs/superpowers/specs/2026-04-20-sondage-ia-design.md → pages/api/session/[sessionId]/email.js
+- `Transilio Brand Guidelines (colors + typography)` --rationale_for--> `handler()`  [INFERRED]
+  docs/superpowers/specs/2026-04-20-sondage-ia-design.md → pages/api/session/[sessionId]/email.js
+- `sendBeacon/keepalive tracker transport (no external SDK)` --feeds_into--> `recordEvent()`  [INFERRED]
+  components/Analytics/Tracker.js → lib/analytics.js
 
 ## Hyperedges (group relationships)
-- **Claude Coding Principles** — claude_think_before_coding, claude_simplicity_first, claude_surgical_changes, claude_goal_driven_execution [EXTRACTED 1.00]
 - **Admin authentication flow** — authform_authform, authform_handlesubmit, admin_index_adminpage, adminlayout_handlelogout, adminlayout_adminlayout [INFERRED 0.90]
 - **Formation management lifecycle (CRUD + share link)** — admin_sessions_sessionspage, admin_sessions_loadformations, admin_sessions_handlecreate, admin_sessions_handledelete, admin_sessions_handlecopy, api_sessions_handler, utils_readjsonfile, utils_writejsonfile, utils_generatehexid [INFERRED 0.90]
-- **Survey response data lifecycle (collect -> store -> visualize)** — survey_surveypage, survey_handlesubmit, api_sessions_handler, admin_resultats_resultatspage, admin_resultats_getstats, simplewordcloud_simplewordcloud, admin_sessions_countwords [INFERRED 0.85]
-- **IA semantic-normalization pipeline** — analyze_handler, analyze_callia, analyze_parsnormalizedoutput, data_config_prompt_attentes_md, data_config_prompt_craintes_md [INFERRED 0.92]
-- **Admin authentication flow** — auth_handler, auth_hasvalidhash, logout_handler, spec_settings_json_schema [INFERRED 0.88]
-- **Participant email recap flow** — email_handler, sessionid_handler, spec_transilio_brand, spec_flux_thankyou_step, spec_settings_json_schema [INFERRED 0.85]
+- **Claude Coding Principles** — claude_think_before_coding, claude_simplicity_first, claude_surgical_changes, claude_goal_driven_execution [EXTRACTED 1.00]
+- **Tenant lifecycle: create → magic-link → consume → session → activity → purge** — tenants_createtenant, tenants_createmagiclink, tenants_consumemagiclink, auth_registersessiontoken, tenants_recordactivity, tenants_purgestaletenant [INFERRED 0.90]
+- **Magic-link delivery: validate → API → create → email** — accessappmodal_default, accessappmodal_api_endpoint, tenants_createmagiclink, email_sendemail [INFERRED 0.80]
+- **Webhook fire-and-forget on tenant.created and tenant.deleted** — tenants_createtenant, tenants_deletetenant, webhook_firewebhook, webhook_sendwebhook, webhook_supported_events [INFERRED 0.90]
+- **Two cookie-based auth schemes: tenant session + super-admin** — auth_magic_link_design, auth_cookienamefor, superadmin_2fa_design, superadmin_setsuperadmincookie [INFERRED 0.85]
+- **Analytics pipeline: Tracker → /api/track → recordEvent → JSONL → readAggregates** — app_myapp, tracker_default, tracker_sendbeacon_usage, analytics_recordevent, analytics_readevents, analytics_readaggregates [INFERRED 0.85]
+- **Shared data layout: data/tenants/[tenantId]/{tenant.json,sessions.json}** — tenants_data_layout, tenants_gettenant, tenants_createtenant, tenants_recordactivity, tenants_purgestaletenant, migrate_script [INFERRED 0.95]
+- **data/config/settings.json shared by super-admin, email, webhooks** — superadmin_getsuperadminemail, email_sendemail, webhook_sendwebhook [INFERRED 0.80]
+- **Rate-limiting used to protect tenant access-link API and request-link flows** — rate_limit_ratelimit, rate_limit_checkratelimit, accessappmodal_default [INFERRED 0.70]
+- **Magic link auth chain** — index_home, api_tenant_request_link_handler, api_tenant_consume_magic_link_handler, admin_tenantid_index_adminredirect, admin_tenantid_sondages_tenantsondagespage [EXTRACTED 0.90]
+- **Respondent survey submission chain** — survey_surveypage, api_tenant_tenantid_session_sessionid_lookup_handler, api_tenant_tenantid_session_sessionid_handler, api_tenant_tenantid_session_sessionid_email_handler [EXTRACTED 0.95]
+- **Admin results view + IA analysis chain** — admin_tenantid_resultats_resultatspage, api_tenant_tenantid_me_handler, api_tenant_tenantid_sondages_handler, api_tenant_tenantid_session_sessionid_handler, api_tenant_tenantid_analyze_handler [EXTRACTED 0.95]
+- **Super-admin dashboard + purge chain** — super_admin_dashboard_superadmindashboard, super_admin_activity_superadminactivity, super_admin_login_superadminlogin [INFERRED 0.80]
+- **Tenant isolation endpoints group** — api_tenant_tenantid_sondages_handler, api_tenant_tenantid_session_sessionid_handler, api_tenant_tenantid_session_sessionid_lookup_handler, api_tenant_tenantid_session_sessionid_email_handler, api_tenant_tenantid_analyze_handler, api_tenant_tenantid_me_handler [EXTRACTED 0.95]
+- **Deprecated 410-Gone endpoint migration set** — logout_handler, auth_handler, analyze_handler, setup_check_handler, session_sessionid_handler, session_sessionid_email_handler, deprecated_endpoint_pattern [EXTRACTED 1.00]
+- **Super-admin API surface (auth, tenants, activity, stats, export)** — super_admin_login_handler, super_admin_logout_handler, super_admin_tenants_handler, super_admin_activity_handler, super_admin_activity_export_handler, super_admin_stats_daily_handler, super_admin_tenantid_delete_handler, purge_handler [INFERRED 0.90]
+- **IA normalization prompt pair (craintes + attentes)** — prompt_craintes_md, prompt_attentes_md, fears_prompt_structure, benefits_prompt_structure [INFERRED 0.90]
+- **Graphify output artifacts (graph.html, report, prior query)** — graph_html_visualization, graph_report_md, readjsonfile_bridge_query, graphify_god_node_readjsonfile, graphify_ia_normalization_hyperedge [INFERRED 0.85]
 
 ## Communities
 
-### Community 0 - "Sessions & Settings API"
-Cohesion: 0.16
-Nodes (14): SessionsPage handleCreate (POST /api/sessions), SessionsPage handleDelete (DELETE /api/sessions), SessionsPage loadFormations (GET /api/sessions), API handler /api/craintes (GET fears options), API handler /api/sessions (GET/POST/DELETE formations), API handler /api/settings (GET settings.json), handler(), handler() (+6 more)
+### Community 0 - "Tenant Admin UI & API"
+Cohesion: 0.08
+Nodes (40): AdminIndex, AdminRedirect, ResultatsPage, TenantSondagesPage, AdminLayout, POST /api/tenant/logout, Anti-Exfiltration Responses Design, Anti-Hallucination Originals Filter (+32 more)
 
-### Community 1 - "IA Analysis & Email"
+### Community 1 - "Tenant Lifecycle & Session Handlers"
+Cohesion: 0.1
+Nodes (34): handler(), handler(), hardReload(), Task 5: Formation Management API (plan), 30-day auto-delete retention claim, handler(), handler(), migrate-to-tenants idempotent migration script (+26 more)
+
+### Community 2 - "IA Analysis Pipeline & Prompts"
+Cohesion: 0.08
+Nodes (30): callIa(), cleanTerm(), filterOriginalsToSource(), handler(), isSeparatorTerm(), normalizeForCompare(), parseNormalizedOutput(), readPromptFile() (+22 more)
+
+### Community 3 - "RGPD Analytics & Stats"
+Cohesion: 0.12
+Nodes (20): getCountry(), getDeviceType(), hashVisitor(), JSON-Lines Append-Only Analytics Storage, normalizeTenantIdFilter(), readAggregates(), readEvents(), recordEvent() (+12 more)
+
+### Community 4 - "Super-Admin & Tenant Deletion"
 Cohesion: 0.15
-Nodes (16): handler(), prompt_attentes.md (Benefits IA normalization prompt), prompt_craintes.md (Fears IA normalization prompt), Efficience (umbrella term: gain de temps, productivite, automatisation), handler(), hardReload(), Task 5: Formation Management API (plan), Task 10: Deployment Preparation (plan) (+8 more)
+Nodes (21): handler(), parseTenantIds(), handler(), Manual tenant delete with optional archive-to-data/archive flow, handler(), purgeStaleTenants (30-day threshold, dryRun support), POST /api/super-admin/tenants/[tenantId]/delete handler, Super-Admin 2FA: settings.json email + env password, HMAC-SHA256 signed cookie (+13 more)
 
-### Community 2 - "IA Provider Adapters"
+### Community 5 - "Magic Link & Tenant Onboarding"
+Cohesion: 0.15
+Nodes (19): POST /api/tenant/request-link (magic link issuance), AccessAppModal (multi-phase: input/confirmCreate/success), Phase state machine: input → confirmCreate → success, Hero (landing CTA opener), escapeHtml(), handler(), MAGIC_LINK_TEMPLATE(), generateSessionId() (+11 more)
+
+### Community 6 - "Admin Results & Sessions UI"
+Cohesion: 0.11
+Nodes (17): ResultatsPage getStats (aggregates keywords), ResultatsPage (admin results + word cloud), SessionsPage countWords (iterates responses.needs/fears), SessionsPage handleCopy (clipboard for survey URL), SessionsPage handleCreate (POST /api/sessions), SessionsPage handleDelete (DELETE /api/sessions), SessionsPage loadFormations (GET /api/sessions), SessionsPage (formation CRUD admin) (+9 more)
+
+### Community 7 - "Email Transport & Settings"
+Cohesion: 0.2
+Nodes (11): API handler /api/craintes (GET fears options), API handler /api/settings (GET settings.json), Session email recap, escapeHtml(), getSettings(), handler(), sendEmail(), SMTP Transport (Nodemailer, shared credentials) (+3 more)
+
+### Community 8 - "Webhooks (JSON + Pushover)"
 Cohesion: 0.29
-Nodes (10): callIa(), cleanTerm(), cleanTerm(), isSeparatorTerm(), parseNormalizedOutput(), parseNormalizedOutput(), PROVIDER_URLS, IA Provider: Mistral API (+2 more)
+Nodes (9): readFileSync(), buildMessage(), fireWebhook(), getWebhookConfig(), HMAC-SHA256 webhook signing (X-Webhook-Signature), Pushover mode (form-urlencoded, env creds priority), readSettings(), sendWebhook() (+1 more)
 
-### Community 3 - "Admin Auth"
-Cohesion: 0.24
-Nodes (7): readPromptFile(), handler(), hasValidHash(), Task 4: Admin Authentication (plan), handler(), handler(), readFileSync()
+### Community 9 - "Super-Admin Dashboard"
+Cohesion: 0.27
+Nodes (4): formatRelative(), PurgeReportPanel(), statusBadge(), SuperAdminDashboard()
 
-### Community 4 - "Survey UI & Theming"
-Cohesion: 0.28
-Nodes (7): ResultatsPage getStats (aggregates keywords), SessionsPage countWords (iterates responses.needs/fears), SessionsPage handleCopy (clipboard for survey URL), Home handleJoinWithCode (redirects to /survey), Home(), SurveyPage(), Transilio design tokens (tailwind theme)
+### Community 10 - "Analytics Tracker"
+Cohesion: 0.29
+Nodes (4): MyApp(), Tracker (pageview/pageview_duration), extractTenantId(), sendBeacon/keepalive tracker transport (no external SDK)
 
-### Community 5 - "Admin Components"
-Cohesion: 0.25
-Nodes (6): AdminPage (setup-check, renders AuthForm), ResultatsPage (admin results + word cloud), SessionsPage (formation CRUD admin), AdminLayout(), AuthForm(), SimpleWordCloud()
+### Community 11 - "Migration Scripts"
+Cohesion: 0.6
+Nodes (5): chmod600(), exists(), logHeader(), main(), readJson()
 
-### Community 6 - "Phonetic Code Generator"
+### Community 12 - "Survey Public Flow"
+Cohesion: 0.53
+Nodes (4): buildExportUrl(), deviceEmoji(), formatTs(), SuperAdminActivity()
+
+### Community 13 - "Rate Limiting & Auth Libs"
+Cohesion: 0.4
+Nodes (5): CSV export with UTF-8 BOM (Excel-compatible), Daily stats stacked by tenant (multi-tenant byDay decomposition), GET /api/super-admin/activity/export handler, GET /api/super-admin/activity handler, GET /api/super-admin/stats/daily handler
+
+### Community 14 - "Auth Cookie Validation"
+Cohesion: 0.67
+Nodes (4): checkRateLimit, clientIp, In-Memory Sliding-Window Rate Limiter, rateLimit
+
+### Community 15 - "Email Recap Endpoint"
+Cohesion: 0.67
+Nodes (0): 
+
+### Community 16 - "Word Cloud Component"
+Cohesion: 0.67
+Nodes (3): HowItWorks (3-step explainer), STEPS list (Create / Share / Analyze), SimpleWordCloud
+
+### Community 17 - "Tenant Public Lookup"
+Cohesion: 0.67
+Nodes (3): Super-admin dual-factor auth (email + password, HMAC-signed cookie), POST /api/super-admin/login handler, POST /api/super-admin/logout handler
+
+### Community 18 - "Tenant Formations API"
 Cohesion: 1.0
 Nodes (0): 
 
-### Community 7 - "App Shell"
+### Community 19 - "Setup Check Endpoint"
 Cohesion: 1.0
 Nodes (0): 
 
-### Community 8 - "Results Page"
+### Community 20 - "Public Survey Page"
 Cohesion: 1.0
 Nodes (0): 
 
-### Community 9 - "Sessions Admin Page"
+### Community 21 - "Pinia"
 Cohesion: 1.0
 Nodes (0): 
 
-### Community 10 - "Admin Home Page"
+### Community 22 - "Cluster 22"
 Cohesion: 1.0
 Nodes (0): 
 
-### Community 11 - "Graph Artifacts"
-Cohesion: 1.0
-Nodes (2): graphify visualization (graph.html), Graph extraction report (GRAPH_REPORT.md)
-
-### Community 12 - "Tailwind Config"
+### Community 23 - "Cluster 23"
 Cohesion: 1.0
 Nodes (0): 
 
-### Community 13 - "Next.js Config"
+### Community 24 - "Cluster 24"
 Cohesion: 1.0
 Nodes (0): 
 
-### Community 14 - "PostCSS Config"
+### Community 25 - "Cluster 25"
 Cohesion: 1.0
 Nodes (0): 
 
-### Community 15 - "Think Before Coding"
+### Community 26 - "Cluster 26"
 Cohesion: 1.0
-Nodes (1): Think Before Coding Principle
+Nodes (0): 
 
-### Community 16 - "Simplicity First"
+### Community 27 - "Cluster 27"
 Cohesion: 1.0
-Nodes (1): Simplicity First Principle
+Nodes (0): 
 
-### Community 17 - "Surgical Changes"
+### Community 28 - "Cluster 28"
 Cohesion: 1.0
-Nodes (1): Surgical Changes Principle
+Nodes (0): 
 
-### Community 18 - "Goal-Driven Execution"
+### Community 29 - "Cluster 29"
 Cohesion: 1.0
-Nodes (1): Goal-Driven Execution Principle
+Nodes (0): 
 
-### Community 19 - "Admin Logout Handler"
+### Community 30 - "Cluster 30"
 Cohesion: 1.0
-Nodes (1): AdminLayout handleLogout (calls /api/admin/logout)
+Nodes (0): 
 
-### Community 20 - "Auth Form Submit"
+### Community 31 - "Cluster 31"
+Cohesion: 1.0
+Nodes (2): Public tenant endpoint design (id+name only, no email/tokens), GET /api/tenant/public/[tenantId] handler
+
+### Community 32 - "Cluster 32"
+Cohesion: 1.0
+Nodes (2): Transilio brand logo (public/logo-transilio.png), Transilio brand concept (multi-tenant lead magnet)
+
+### Community 33 - "Cluster 33"
+Cohesion: 1.0
+Nodes (2): GET /api/super-admin/tenants handler, Tenant wordclouds aggregation (needs+fears across all sessions)
+
+### Community 34 - "Cluster 34"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 35 - "Cluster 35"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 36 - "Cluster 36"
 Cohesion: 1.0
 Nodes (1): AuthForm handleSubmit (POSTs to /api/admin/auth)
 
-### Community 21 - "Survey Submit"
-Cohesion: 1.0
-Nodes (1): SurveyPage handleSubmit (POSTs to /api/session/[id])
-
-### Community 22 - "Code Generation Handler"
-Cohesion: 1.0
-Nodes (1): SurveyPage handleGenerateCode (phonetic participant code)
-
-### Community 23 - "Results Analyze Handler"
+### Community 37 - "Cluster 37"
 Cohesion: 1.0
 Nodes (1): ResultatsPage handleAnalyze (POSTs to /api/admin/analyze)
 
-### Community 24 - "Results Export Handler"
+### Community 38 - "Cluster 38"
 Cohesion: 1.0
 Nodes (1): ResultatsPage handleExport (JSON download)
 
+### Community 39 - "Cluster 39"
+Cohesion: 1.0
+Nodes (1): Think Before Coding Principle
+
+### Community 40 - "Cluster 40"
+Cohesion: 1.0
+Nodes (1): Simplicity First Principle
+
+### Community 41 - "Cluster 41"
+Cohesion: 1.0
+Nodes (1): Surgical Changes Principle
+
+### Community 42 - "Cluster 42"
+Cohesion: 1.0
+Nodes (1): Goal-Driven Execution Principle
+
+### Community 43 - "Cluster 43"
+Cohesion: 1.0
+Nodes (1): Task 10: Deployment Preparation (plan)
+
+### Community 44 - "Cluster 44"
+Cohesion: 1.0
+Nodes (1): Step 4: Thank you + email recap
+
+### Community 45 - "Cluster 45"
+Cohesion: 1.0
+Nodes (1): Ping healthcheck
+
 ## Knowledge Gaps
-- **28 isolated node(s):** `Think Before Coding Principle`, `Simplicity First Principle`, `Surgical Changes Principle`, `Goal-Driven Execution Principle`, `AdminLayout handleLogout (calls /api/admin/logout)` (+23 more)
+- **56 isolated node(s):** `AuthForm component (admin password setup/login)`, `AuthForm handleSubmit (POSTs to /api/admin/auth)`, `ResultatsPage handleAnalyze (POSTs to /api/admin/analyze)`, `ResultatsPage handleExport (JSON download)`, `SessionsPage loadFormations (GET /api/sessions)` (+51 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **Thin community `Phonetic Code Generator`** (2 nodes): `generatePhoneticCode()`, `generateCode.js`
+- **Thin community `Tenant Formations API`** (2 nodes): `HowItWorks.js`, `HowItWorks()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `App Shell`** (2 nodes): `MyApp()`, `_app.js`
+- **Thin community `Setup Check Endpoint`** (2 nodes): `Hero.js`, `Hero()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Results Page`** (2 nodes): `resultats.js`, `ResultatsPage()`
+- **Thin community `Public Survey Page`** (2 nodes): `AccessAppModal()`, `AccessAppModal.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Sessions Admin Page`** (2 nodes): `sessions.js`, `SessionsPage()`
+- **Thin community `Pinia`** (2 nodes): `SuperAdminLayout.js`, `SuperAdminLayout()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Admin Home Page`** (2 nodes): `AdminPage()`, `index.js`
+- **Thin community `Cluster 22`** (2 nodes): `LegalFooter.js`, `LegalFooter()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Graph Artifacts`** (2 nodes): `graphify visualization (graph.html)`, `Graph extraction report (GRAPH_REPORT.md)`
+- **Thin community `Cluster 23`** (2 nodes): `printReport()`, `purge-stale-tenants.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Tailwind Config`** (1 nodes): `tailwind.config.js`
+- **Thin community `Cluster 24`** (2 nodes): `generatePhoneticCode()`, `generateCode.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Next.js Config`** (1 nodes): `next.config.js`
+- **Thin community `Cluster 25`** (2 nodes): `AdminIndex()`, `index.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `PostCSS Config`** (1 nodes): `postcss.config.js`
+- **Thin community `Cluster 26`** (2 nodes): `resultats.js`, `ResultatsPage()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Think Before Coding`** (1 nodes): `Think Before Coding Principle`
+- **Thin community `Cluster 27`** (2 nodes): `AdminRedirect()`, `index.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Simplicity First`** (1 nodes): `Simplicity First Principle`
+- **Thin community `Cluster 28`** (2 nodes): `SuperAdminLogin()`, `login.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Surgical Changes`** (1 nodes): `Surgical Changes Principle`
+- **Thin community `Cluster 29`** (2 nodes): `sessions.js`, `handler()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Goal-Driven Execution`** (1 nodes): `Goal-Driven Execution Principle`
+- **Thin community `Cluster 30`** (2 nodes): `ping.js`, `handler()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Admin Logout Handler`** (1 nodes): `AdminLayout handleLogout (calls /api/admin/logout)`
+- **Thin community `Cluster 31`** (2 nodes): `Public tenant endpoint design (id+name only, no email/tokens)`, `GET /api/tenant/public/[tenantId] handler`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Auth Form Submit`** (1 nodes): `AuthForm handleSubmit (POSTs to /api/admin/auth)`
+- **Thin community `Cluster 32`** (2 nodes): `Transilio brand logo (public/logo-transilio.png)`, `Transilio brand concept (multi-tenant lead magnet)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Survey Submit`** (1 nodes): `SurveyPage handleSubmit (POSTs to /api/session/[id])`
+- **Thin community `Cluster 33`** (2 nodes): `GET /api/super-admin/tenants handler`, `Tenant wordclouds aggregation (needs+fears across all sessions)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Code Generation Handler`** (1 nodes): `SurveyPage handleGenerateCode (phonetic participant code)`
+- **Thin community `Cluster 34`** (1 nodes): `next.config.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Results Analyze Handler`** (1 nodes): `ResultatsPage handleAnalyze (POSTs to /api/admin/analyze)`
+- **Thin community `Cluster 35`** (1 nodes): `postcss.config.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Results Export Handler`** (1 nodes): `ResultatsPage handleExport (JSON download)`
+- **Thin community `Cluster 36`** (1 nodes): `AuthForm handleSubmit (POSTs to /api/admin/auth)`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Cluster 37`** (1 nodes): `ResultatsPage handleAnalyze (POSTs to /api/admin/analyze)`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Cluster 38`** (1 nodes): `ResultatsPage handleExport (JSON download)`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Cluster 39`** (1 nodes): `Think Before Coding Principle`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Cluster 40`** (1 nodes): `Simplicity First Principle`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Cluster 41`** (1 nodes): `Surgical Changes Principle`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Cluster 42`** (1 nodes): `Goal-Driven Execution Principle`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Cluster 43`** (1 nodes): `Task 10: Deployment Preparation (plan)`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Cluster 44`** (1 nodes): `Step 4: Thank you + email recap`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Cluster 45`** (1 nodes): `Ping healthcheck`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `readJsonFile()` connect `Sessions & Settings API` to `IA Analysis & Email`, `Admin Auth`?**
-  _High betweenness centrality (0.284) - this node is a cross-community bridge._
-- **Why does `handler()` connect `IA Analysis & Email` to `Sessions & Settings API`, `IA Provider Adapters`, `Admin Auth`?**
-  _High betweenness centrality (0.206) - this node is a cross-community bridge._
-- **Why does `API handler /api/sessions (GET/POST/DELETE formations)` connect `Sessions & Settings API` to `Survey UI & Theming`, `Admin Components`?**
-  _High betweenness centrality (0.206) - this node is a cross-community bridge._
-- **Are the 10 inferred relationships involving `readJsonFile()` (e.g. with `handler()` and `handler()`) actually correct?**
-  _`readJsonFile()` has 10 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 6 inferred relationships involving `handler()` (e.g. with `readJsonFile()` and `writeJsonFile()`) actually correct?**
-  _`handler()` has 6 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 4 inferred relationships involving `SurveyPage()` (e.g. with `SessionsPage countWords (iterates responses.needs/fears)` and `ResultatsPage (admin results + word cloud)`) actually correct?**
-  _`SurveyPage()` has 4 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 2 inferred relationships involving `API handler /api/sessions (GET/POST/DELETE formations)` (e.g. with `ensureDir()` and `SessionsPage (formation CRUD admin)`) actually correct?**
-  _`API handler /api/sessions (GET/POST/DELETE formations)` has 2 INFERRED edges - model-reasoned connections that need verification._
+- **Why does `handler()` connect `IA Analysis Pipeline & Prompts` to `Tenant Admin UI & API`, `Tenant Lifecycle & Session Handlers`, `Email Transport & Settings`?**
+  _High betweenness centrality (0.106) - this node is a cross-community bridge._
+- **Why does `isValidTenantId()` connect `Tenant Lifecycle & Session Handlers` to `Tenant Admin UI & API`, `IA Analysis Pipeline & Prompts`, `Magic Link & Tenant Onboarding`, `Email Transport & Settings`, `Analytics Tracker`?**
+  _High betweenness centrality (0.097) - this node is a cross-community bridge._
+- **Why does `requireSuperAdminApi()` connect `Super-Admin & Tenant Deletion` to `Tenant Lifecycle & Session Handlers`, `RGPD Analytics & Stats`?**
+  _High betweenness centrality (0.065) - this node is a cross-community bridge._
+- **Are the 12 inferred relationships involving `handler()` (e.g. with `isValidTenantId()` and `requireTenantApi()`) actually correct?**
+  _`handler()` has 12 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 16 inferred relationships involving `isValidTenantId()` (e.g. with `getTenant()` and `getTenantSessions()`) actually correct?**
+  _`isValidTenantId()` has 16 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 5 inferred relationships involving `createTenant()` (e.g. with `handler()` and `SMTP Transport (Nodemailer, shared credentials)`) actually correct?**
+  _`createTenant()` has 5 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 5 inferred relationships involving `getTenant()` (e.g. with `isValidTenantId()` and `handler()`) actually correct?**
+  _`getTenant()` has 5 INFERRED edges - model-reasoned connections that need verification._
