@@ -326,12 +326,17 @@ export default function SurveyPage() {
                     var code = stagiaireCode.toUpperCase().trim()
 
                     // Vérifier si ce participant a déjà des réponses enregistrées
+                    // via POST /lookup (le GET public ne renvoie plus responses,
+                    // pour éviter l'exfiltration de la base nominative).
                     try {
-                      var res = await fetch(tenantApi('/session/' + encodeURIComponent(session)))
+                      var res = await fetch(tenantApi('/session/' + encodeURIComponent(session) + '/lookup'), {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ code: code }),
+                      })
                       if (res.ok) {
-                        var data = await res.json()
-                        var existing = (data.responses || []).find(function (r) { return r.id === code })
-                        if (existing) {
+                        var existing = await res.json()
+                        if (existing && existing.id) {
                           // Recharger les réponses existantes
                           setAttentes('')
                           setAutreAttente('')

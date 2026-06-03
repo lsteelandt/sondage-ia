@@ -1,6 +1,8 @@
 /**
  * GET /api/tenant/[tenantId]/session/[sessionId]
  *   Renvoie la session + agrégats besoins/craintes pour le nuage de mots.
+ *   Ne renvoie PAS les réponses nominatives : pour retrouver SA propre
+ *   réponse par code, voir POST /api/tenant/[tenantId]/session/[sessionId]/lookup.
  *
  * POST /api/tenant/[tenantId]/session/[sessionId]
  *   Ajoute une réponse de sondage (anonyme) à la session.
@@ -8,6 +10,11 @@
  * PAS d'auth requise pour les répondants. L'isolation par tenant est
  * garantie par le chemin : on lit/écrit uniquement dans le fichier de
  * ce tenant.
+ *
+ * NOTE sécurité : on ne renvoie JAMAIS `responses` ici sans auth admin,
+ * pour éviter qu'un destinataire du lien de sondage puisse exfiltrer
+ * la liste nominative (id, needs, fears, submittedAt) de tous les
+ * participants en appelant ce GET.
  */
 
 import { getTenantSessions, writeTenantSessions, recordActivity, maybeRunPurge, withMutex } from '../../../../../lib/tenants.js'
@@ -50,7 +57,6 @@ export default async function handler(req, res) {
         label: sessionData.label,
         createdAt: sessionData.createdAt,
         participantCount: sessionData.participantCount || 0,
-        responses: sessionData.responses || [],
         keywords: {
           attentes: needsAgg,
           craintes: fearsAgg,
