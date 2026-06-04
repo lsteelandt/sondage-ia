@@ -290,7 +290,7 @@ export default function AccessAppModal({ open, onClose }) {
           Accédez à votre application de sondage
         </h2>
         <p className="text-white/60 text-sm mb-6">
-          Saisissez votre email professionnel. Si un espace existe déjà,
+          Saisissez votre email professionnel (⚠️ gmail, orange, Outlook... ne sont pas acceptés). Si un espace existe déjà,
           vous recevrez un lien magique pour y accéder. Sinon, vous pourrez
           en créer un.
         </p>

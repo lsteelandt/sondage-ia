@@ -6,7 +6,7 @@ const STEPS = [
     number: '01',
     title: 'Créez votre sondage',
     description:
-      'Saisissez votre email professionnel (⚠️ gmail, orange, Outlook... ne sont pas acceptés). Vous recevez un lien magique par email pour accéder à votre espace de création de sondages.',
+      'Saisissez votre email professionnel. Vous recevez un lien magique par email pour accéder à votre espace de création de sondages.',
     icon: '✨',
   },
   {
